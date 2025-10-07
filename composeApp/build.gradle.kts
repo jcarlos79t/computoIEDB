@@ -26,21 +26,12 @@ kotlin {
         browser()
         binaries.executable()
     }
-    
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-        binaries.executable()
-    }
-    
+
     sourceSets {
-        val ktorVersion = "2.3.7"
-        val kotlinxDatetime = "0.6.1"
-        val kotlinxSerialization = "1.6.3"
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation("io.ktor:ktor-client-okhttp:${ktorVersion}")
+            implementation(libs.ktor.client.android)
         }
 
         commonMain.dependencies {
@@ -53,15 +44,10 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            // Ktor core
-            implementation("io.ktor:ktor-client-core:${ktorVersion}")
-            implementation("io.ktor:ktor-client-content-negotiation:${ktorVersion}")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:${ktorVersion}")
-            // DateTime
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:${kotlinxDatetime}")
-            // Serialization core
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${kotlinxSerialization}")
-
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -69,7 +55,10 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            implementation("io.ktor:ktor-client-java:${ktorVersion}")
+            implementation(libs.ktor.client.java)
+        }
+        jsMain.dependencies {
+            implementation(libs.ktor.client.js)
         }
     }
 }
