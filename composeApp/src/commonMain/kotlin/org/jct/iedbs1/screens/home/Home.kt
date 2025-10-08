@@ -51,7 +51,7 @@ import org.jct.iedbs1.models.Cargo
 // --- Entry Point ---
 @Composable
 fun HomeRoute(
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel
 ) {
     val cargos by homeViewModel.cargos.collectAsState()
 
@@ -91,7 +91,7 @@ fun HomeScreen(cargos: List<Cargo>) {
                         CargoCard(
                             fecha = Utils.formatFecha(cargo.fecha),
                             estado = cargo.estado,
-                            titulo = cargo.titulo,
+                            titulo = cargo.cargo,
                             ganador = cargo.ganador
                         )
                     }
