@@ -5,15 +5,15 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
-import org.jct.iedbs1.models.Cargo
-import org.jct.iedbs1.network.createHttpClient
 
+import org.jct.iedbs1.models.Cargo
+import org.jct.iedbs1.network.httpClient
 
 class ApiRepository(
     private val apiKey: String,
     private val bearerToken: String
 ) {
-    private val client = createHttpClient()
+    private val client = httpClient()
     private val baseUrl = "https://rxrdxsqykqlkymbfqypp.supabase.co/rest/v1"
 
     suspend fun getCargos(): List<Cargo> {
