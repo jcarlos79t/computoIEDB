@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -25,6 +26,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -66,7 +69,20 @@ fun HomeRoute(
 fun HomeScreen(cargos: List<Cargo>, viewModel: HomeViewModel) {
     Scaffold(
         containerColor = Color(0xFF1E1E1E),
-        topBar = { Header(viewModel) }
+        topBar = { Header(viewModel) },
+        floatingActionButton = { // 👇 Aquí agregás tu FAB
+            FloatingActionButton(
+                onClick = { /* acción del botón */ },
+                containerColor = Color(0xFF0D47A1),
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Agregar cargo"
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End // opcional: End o Center
     ) { innerPadding ->
         Column(
             modifier = Modifier
