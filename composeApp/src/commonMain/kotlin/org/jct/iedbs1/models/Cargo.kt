@@ -8,11 +8,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Cargo(
-    var id: String,
+    var id: String="",
     var cargo: String = "",
     var fecha: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
     var votosEmitidos: Int = 0,
-    var titulo: String = "", // Añadido valor por defecto
     var ganador: String? = null,
     var colorGanador: String = "", // Cambiado a String
     var estado: String = "PENDIENTE",

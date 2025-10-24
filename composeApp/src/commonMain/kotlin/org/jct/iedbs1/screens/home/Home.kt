@@ -29,11 +29,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -50,32 +49,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.screens.new.NuevoCargo
 
 // --- Entry Point ---
 @Composable
 fun HomeRoute(
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    onNavigateToNuevoCargo: () -> Unit
 ) {
     val cargos by homeViewModel.cargos.collectAsState()
 
-    HomeScreen(cargos = cargos, homeViewModel)
+    HomeScreen(
+        cargos = cargos,
+        viewModel = homeViewModel,
+        onNavigateToNuevoCargo = onNavigateToNuevoCargo
+    )
 }
 
 // --- Pantalla principal ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(cargos: List<Cargo>, viewModel: HomeViewModel) {
+fun HomeScreen(
+    cargos: List<Cargo>,
+    viewModel: HomeViewModel,
+    onNavigateToNuevoCargo: () -> Unit
+) {
     Scaffold(
-        containerColor = Color(0xFF1E1E1E),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = { Header(viewModel) },
         floatingActionButton = { // 👇 Aquí agregás tu FAB
             FloatingActionButton(
-                onClick = {  },
-                containerColor = Color(0xFF0D47A1),
-                contentColor = Color.White
+                onClick = onNavigateToNuevoCargo,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -98,7 +105,7 @@ fun HomeScreen(cargos: List<Cargo>, viewModel: HomeViewModel) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Color.White)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 LazyColumn(
@@ -125,12 +132,12 @@ fun HomeScreen(cargos: List<Cargo>, viewModel: HomeViewModel) {
 @Composable
 fun Header(viewModel: HomeViewModel) {
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0D47A1)),
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
         navigationIcon = {
             Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = "Logo",
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .size(35.dp)
@@ -144,7 +151,7 @@ fun Header(viewModel: HomeViewModel) {
                 Text(
                     text = "ELECCIONES 2026-2027",
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                     lineHeight = 5.sp
@@ -152,14 +159,14 @@ fun Header(viewModel: HomeViewModel) {
                 )
                 Text(
                     text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                    color = Color(0xFFBFE0FF),
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center,
                     lineHeight = 10.sp
                 )
                 Text(
                     text = "Dep. Sistemas ©2025 Area AudioVisual",
-                    color = Color(0xFFBFE0FF),
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                     fontSize = 9.sp,
                     textAlign = TextAlign.Center
                 )
@@ -169,7 +176,7 @@ fun Header(viewModel: HomeViewModel) {
             Icon(
                 imageVector = Icons.Default.Sync,
                 contentDescription = "Sincronizar",
-                tint = Color.White,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .size(40.dp)
                     .padding(end = 12.dp)
@@ -211,7 +218,7 @@ fun CargoCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -220,7 +227,7 @@ fun CargoCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = fecha.uppercase(), color = Color(0xFFBDBDBD), fontSize = 12.sp)
+                Text(text = fecha.uppercase(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 12.sp)
                 Spacer(modifier = Modifier.weight(1f))
                 Box(
                     modifier = Modifier
@@ -240,14 +247,14 @@ fun CargoCard(
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 titulo.uppercase(),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
 
             ganador?.let {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("🥇 GANADOR  $it", color = Color(0xFFBDBDBD), fontSize = 13.sp)
+                Text("🥇 GANADOR  $it", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 13.sp)
             }
 
             Row(
@@ -257,7 +264,7 @@ fun CargoCard(
                 Icon(
                     Icons.Default.ArrowForward,
                     contentDescription = "Ir",
-                    tint = Color(0xFFBDBDBD),
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
 
                 )
             }

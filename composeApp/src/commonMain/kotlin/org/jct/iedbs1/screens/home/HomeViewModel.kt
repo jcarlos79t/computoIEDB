@@ -1,27 +1,24 @@
 package org.jct.iedbs1.screens.home
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 import org.jct.iedbs1.models.Cargo
-import org.jct.iedbs1.models.EstadoEleccion
 import org.jct.iedbs1.repository.ApiRepository
+import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+sealed class SaveState {
+    object Saving : SaveState()
+    object Success : SaveState()
+    data class Error(val message: String) : SaveState()
+    object Idle : SaveState()
+}
 
 // --- ViewModel ---
 class HomeViewModel(
@@ -32,6 +29,9 @@ class HomeViewModel(
 
     private val _cargos = MutableStateFlow<List<Cargo>>(emptyList())
     val cargos: StateFlow<List<Cargo>> = _cargos.asStateFlow()
+
+    private val _saveState = MutableStateFlow<SaveState>(SaveState.Idle)
+    val saveState: StateFlow<SaveState> = _saveState.asStateFlow()
 
     init {
         cargarCargos()
@@ -50,55 +50,21 @@ class HomeViewModel(
         }
     }
 
-    fun agregarCargo(cargo: Cargo) {
+    @OptIn(ExperimentalUuidApi::class)
+    fun guardarCargo(cargo: Cargo) {
         viewModelScope.launch {
+            _saveState.value = SaveState.Saving
             try {
-                val nuevo = withContext(Dispatchers.IO) {
+                cargo.id = Uuid.random().toString()
+                withContext(Dispatchers.IO) {
                     repository.insertCargo(cargo)
                 }
-                _cargos.value = _cargos.value + nuevo
+                cargarCargos() // Recargar la lista de cargos
+                _saveState.value = SaveState.Success
             } catch (e: Exception) {
+                _saveState.value = SaveState.Error(e.message ?: "Error desconocido")
                 println("❌ Error insertando cargo: ${e.message}")
             }
         }
     }
-
-    /*private fun cargarCargos() {
-        viewModelScope.launch {
-            delay(1500) // Simula llamada a servicio
-            val ahora = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-            _cargos.value = listOf(
-                Cargo(
-                    id = "1",
-                    cargo = "Pastor",
-                    fecha = ahora,
-                    votosEmitidos = 0,
-                    titulo = "Pastor",
-                    ganador = "Junior Mamani Apellido",
-                    colorGanador = 0xFF9E9E9E,
-                    estado = "PENDIENTE",
-                ),
-                Cargo(
-                    id = "1",
-                    cargo = "Pastor",
-                    fecha = ahora.date.plus(1, DateTimeUnit.DAY).atTime(12, 0, 0),
-                    votosEmitidos = 0,
-                    titulo = "Pastor",
-                    ganador = "Junior Mamani Apellido",
-                    colorGanador = 0xFF9E9E9E,
-                    estado = "ENPROGRESO",
-                ),
-                Cargo(
-                    id = "1",
-                    cargo = "Pastor",
-                    fecha = ahora,
-                    votosEmitidos = 0,
-                    titulo = "Pastor",
-                    ganador = "Junior Mamani Apellido",
-                    colorGanador = 0xFF9E9E9E,
-                    estado = "FINALIZADO",
-                )
-            )
-        }
-    }*/
 }
