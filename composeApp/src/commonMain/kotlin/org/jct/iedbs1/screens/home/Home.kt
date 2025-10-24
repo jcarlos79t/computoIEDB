@@ -1,6 +1,7 @@
 package org.jct.iedbs1.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,16 +57,16 @@ fun HomeRoute(
 ) {
     val cargos by homeViewModel.cargos.collectAsState()
 
-    HomeScreen(cargos = cargos)
+    HomeScreen(cargos = cargos, homeViewModel)
 }
 
 // --- Pantalla principal ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(cargos: List<Cargo>) {
+fun HomeScreen(cargos: List<Cargo>, viewModel: HomeViewModel) {
     Scaffold(
         containerColor = Color(0xFF1E1E1E),
-        topBar = { Header() }
+        topBar = { Header(viewModel) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -104,50 +106,62 @@ fun HomeScreen(cargos: List<Cargo>) {
 // --- Header ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header() {
+fun Header(viewModel: HomeViewModel) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0D47A1)),
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Logo",
+                tint = Color.White,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .size(35.dp)
+            )
+        },
         title = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person, // tu logo aquí
-                    contentDescription = "Logo",
-                    tint = Color.White,
-                    modifier = Modifier.size(40.dp)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "ELECCIONES AUTORIDADES 2026-2027",
+                    text = "ELECCIONES 2026-2027",
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     fontSize = 16.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    lineHeight = 5.sp
+
                 )
                 Text(
-                    text = "Iglesia evangelica de Dios boliviana Santiago I\nÁrea AudioVisual - Dep. sistemas",
+                    text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
                     color = Color(0xFFBFE0FF),
                     fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 10.sp
+                )
+                Text(
+                    text = "Dep. Sistemas ©2025 Area AudioVisual",
+                    color = Color(0xFFBFE0FF),
+                    fontSize = 9.sp,
                     textAlign = TextAlign.Center
                 )
             }
         },
         actions = {
-            Text(
-                "ADM",
-                color = Color.White,
+            Icon(
+                imageVector = Icons.Default.Sync,
+                contentDescription = "Sincronizar",
+                tint = Color.White,
                 modifier = Modifier
-                    .clip(RoundedCornerShape(50))
-                    .background(Color(0xFF063C84))
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
+                    .size(40.dp)
+                    .padding(end = 12.dp)
+                    .clickable { viewModel.cargarCargos() }
             )
         }
     )
 }
+
 
 // --- SearchBar ---
 @OptIn(ExperimentalMaterial3Api::class)
@@ -164,7 +178,7 @@ fun SearchBar() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clip(RoundedCornerShape(24.dp)),
+            .clip(RoundedCornerShape(34.dp)),
 
 
     )
@@ -226,7 +240,8 @@ fun CargoCard(
                 Icon(
                     Icons.Default.ArrowForward,
                     contentDescription = "Ir",
-                    tint = Color(0xFFBDBDBD)
+                    tint = Color(0xFFBDBDBD),
+
                 )
             }
         }
