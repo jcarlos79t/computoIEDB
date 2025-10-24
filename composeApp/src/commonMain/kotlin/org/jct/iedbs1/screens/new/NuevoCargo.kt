@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,7 +62,8 @@ fun NuevoCargo(viewModel: HomeViewModel, onNavigateBack: () -> Unit) {
                         cargo = cargoNombre
                     )
                     viewModel.guardarCargo(nuevoCargo)
-                }
+                },
+                onNavigateBack = onNavigateBack
             )
         }
     ) { innerPadding ->
@@ -85,17 +88,18 @@ fun NuevoCargo(viewModel: HomeViewModel, onNavigateBack: () -> Unit) {
 // --- Header ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(viewModel: HomeViewModel, onSave: () -> Unit) {
+fun Header(viewModel: HomeViewModel, onSave: () -> Unit, onNavigateBack: () -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
         navigationIcon = {
             Icon(
-                imageVector = Icons.Default.Person,
+                imageVector = Icons.AutoMirrored.Default.ArrowBack,
                 contentDescription = "Logo",
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .size(35.dp)
+                    .clickable(onClick = onNavigateBack)
             )
         },
         title = {
