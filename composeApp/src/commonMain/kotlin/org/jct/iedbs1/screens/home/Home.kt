@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.jct.iedbs1.models.Cargo
+import org.jct.iedbs1.screens.new.NuevoCargo
 
 // --- Entry Point ---
 @Composable
@@ -72,7 +73,7 @@ fun HomeScreen(cargos: List<Cargo>, viewModel: HomeViewModel) {
         topBar = { Header(viewModel) },
         floatingActionButton = { // 👇 Aquí agregás tu FAB
             FloatingActionButton(
-                onClick = { /* acción del botón */ },
+                onClick = {  },
                 containerColor = Color(0xFF0D47A1),
                 contentColor = Color.White
             ) {
