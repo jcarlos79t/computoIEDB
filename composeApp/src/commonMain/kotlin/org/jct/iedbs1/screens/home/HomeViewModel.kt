@@ -67,4 +67,8 @@ class HomeViewModel(
             }
         }
     }
+
+    fun resetSaveState() {
+        _saveState.value = SaveState.Idle
+    }
 }

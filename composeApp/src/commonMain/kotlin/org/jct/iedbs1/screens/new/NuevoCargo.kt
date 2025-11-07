@@ -48,6 +48,7 @@ fun NuevoCargo(viewModel: HomeViewModel, onNavigateBack: () -> Unit) {
     LaunchedEffect(saveState) {
         if (saveState is SaveState.Success) {
             onNavigateBack()
+            viewModel.resetSaveState()
         }
     }
 
