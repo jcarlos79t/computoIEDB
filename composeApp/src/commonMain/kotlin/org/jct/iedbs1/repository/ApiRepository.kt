@@ -7,6 +7,7 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 
 import org.jct.iedbs1.models.Cargo
+import org.jct.iedbs1.models.Postulante
 import org.jct.iedbs1.network.httpClient
 
 class ApiRepository(
@@ -43,5 +44,21 @@ class ApiRepository(
         return Json {
             ignoreUnknownKeys = true
         }.decodeFromString<List<Cargo>>(response).first()
+    }
+
+    suspend fun insertPostulante(postulante: Postulante) {
+        val response: String = client.post("$baseUrl/Postulante") {
+            headers {
+                append("apikey", apiKey)
+                append(HttpHeaders.Authorization, "Bearer $bearerToken")
+                append("Prefer", "return=representation") // para que devuelva el registro creado
+            }
+            contentType(ContentType.Application.Json)
+            setBody(postulante)
+        }.body()
+
+/*        return Json {
+            ignoreUnknownKeys = true
+        }.decodeFromString<List<Postulante>>(response).first()*/
     }
 }

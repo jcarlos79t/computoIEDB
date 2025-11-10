@@ -40,9 +40,9 @@ val darkColorScheme = darkColorScheme(
 )
 
 val typography = Typography(
-    bodySmall = TextStyle( fontSize = 14.sp),
-    bodyMedium = TextStyle( fontSize = 18.sp),
-    bodyLarge = TextStyle( fontSize = 25.sp),
+    bodySmall = TextStyle( fontSize = 10.sp),
+    bodyMedium = TextStyle( fontSize = 14.sp),
+    bodyLarge = TextStyle( fontSize = 18.sp),
 )
 
 val shapes = Shapes(

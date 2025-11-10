@@ -50,7 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jct.iedbs1.models.Cargo
-import org.jct.iedbs1.screens.new.NuevoCargo
+
 
 // --- Entry Point ---
 @Composable
