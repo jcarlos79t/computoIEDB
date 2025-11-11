@@ -3,22 +3,35 @@ package org.jct.iedbs1.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jct.iedbs1.models.Cargo
+import org.jct.iedbs1.models.Postulante
+import org.jct.iedbs1.models.Votos
 import org.jct.iedbs1.repository.ApiRepository
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
+
+// --- States ---
 sealed class SaveState {
     object Saving : SaveState()
     object Success : SaveState()
     data class Error(val message: String) : SaveState()
     object Idle : SaveState()
 }
+
+data class VotosUiState(
+    val postulantes: List<Postulante> = emptyList(),
+    val votos: Map<String, Int> = emptyMap(),
+    val isLoading: Boolean = true,
+    val isSaving: Boolean = false,
+    val saveSuccess: Boolean = false,
+    val totalVotos: Int = 0
+)
 
 // --- ViewModel ---
 class HomeViewModel(
@@ -27,16 +40,19 @@ class HomeViewModel(
 ) : ViewModel() {
     private val repository = ApiRepository(apiKey, bearerToken)
 
+    // Home Screen State
     private val _cargos = MutableStateFlow<List<Cargo>>(emptyList())
     val cargos: StateFlow<List<Cargo>> = _cargos.asStateFlow()
 
-    private val _saveState = MutableStateFlow<SaveState>(SaveState.Idle)
-    val saveState: StateFlow<SaveState> = _saveState.asStateFlow()
+    // RegistrarVotos & Detail Screen State
+    private val _votosUiState = MutableStateFlow(VotosUiState())
+    val votosUiState = _votosUiState.asStateFlow()
 
     init {
         cargarCargos()
     }
 
+    // --- Home Screen Functions ---
     fun cargarCargos() {
         viewModelScope.launch {
             try {
@@ -50,25 +66,101 @@ class HomeViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    fun guardarCargo(cargo: Cargo) {
+    // --- RegistrarVotos & Detail Screen Functions ---
+    fun cargarDatosVotacion(cargoId: String) {
         viewModelScope.launch {
-            _saveState.value = SaveState.Saving
+            _votosUiState.update { it.copy(isLoading = true) }
             try {
-                cargo.id = Uuid.random().toString()
-                withContext(Dispatchers.IO) {
-                    repository.insertCargo(cargo)
+                // Cargar postulantes y votos existentes en paralelo
+                val postulantesDeferred = async(Dispatchers.IO) { repository.getPostulantes(cargoId) }
+                val votosPreviosDeferred = async(Dispatchers.IO) { repository.getVotosForCargo(cargoId) }
+
+                val postulantes = postulantesDeferred.await()
+                val votosPrevios = votosPreviosDeferred.await()
+
+                // Crear el mapa inicial de votos a partir de los datos de la tabla Votos
+                val initialVotosMap = votosPrevios.associate { it.postulanteId to it.votos }
+                val initialTotalVotos = initialVotosMap.values.sum()
+
+                // Ordenar la lista de postulantes por votos (de mayor a menor)
+                val postulantesOrdenados = postulantes.sortedByDescending { initialVotosMap[it.id] ?: 0 }
+
+                _votosUiState.update { state ->
+                    state.copy(
+                        postulantes = postulantesOrdenados,
+                        votos = initialVotosMap,
+                        totalVotos = initialTotalVotos,
+                        isLoading = false
+                    )
                 }
-                cargarCargos() // Recargar la lista de cargos
-                _saveState.value = SaveState.Success
             } catch (e: Exception) {
-                _saveState.value = SaveState.Error(e.message ?: "Error desconocido")
-                println("❌ Error insertando cargo: ${e.message}")
+                println("❌ Error cargando datos de votación: ${e.message}")
+                _votosUiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
-    fun resetSaveState() {
-        _saveState.value = SaveState.Idle
+    fun onVotoChange(postulanteId: String, votos: String) {
+        val newVotos = votos.toIntOrNull() ?: 0
+        _votosUiState.update { state ->
+            val updatedVotos = state.votos.toMutableMap()
+            updatedVotos[postulanteId] = newVotos
+            val total = updatedVotos.values.sum()
+            state.copy(votos = updatedVotos, totalVotos = total)
+        }
+    }
+
+    fun guardarVotos(cargo: Cargo) {
+        viewModelScope.launch {
+            _votosUiState.update { it.copy(isSaving = true) }
+            try {
+                val state = _votosUiState.value
+
+                // 1. Preparar la lista de objetos Votos para enviar a Supabase
+                val votosToUpsert = state.votos.map { (postulanteId, numVotos) ->
+                    Votos(
+                        // Supabase usará (cargoId, postulanteId) como clave para el upsert
+                        id = "${cargo.id}_${postulanteId}", // Clave compuesta para el upsert
+                        cargoId = cargo.id,
+                        postulanteId = postulanteId,
+                        votos = numVotos
+                    )
+                }
+
+                if (votosToUpsert.isNotEmpty()) {
+                    withContext(Dispatchers.IO) {
+                        repository.upsertVotos(votosToUpsert)
+                    }
+                }
+
+                // 2. Encontrar al ganador (esta lógica no cambia)
+                val ganadorId = state.votos.maxByOrNull { it.value }?.key
+                val postulanteGanador = state.postulantes.find { it.id == ganadorId }
+
+                // 3. Actualizar el objeto Cargo principal
+                val updatedCargo = cargo.copy(
+                    estado = "FINALIZADO",
+                    votosEmitidos = state.totalVotos,
+                    ganador = postulanteGanador?.let { "${it.nombre} ${it.apellidos}" },
+                    colorGanador = postulanteGanador?.color ?: ""
+                )
+
+                withContext(Dispatchers.IO) {
+                    repository.updateCargo(updatedCargo)
+                }
+
+                // 4. Actualizar el estado de la UI y recargar la home
+                _votosUiState.update { it.copy(isSaving = false, saveSuccess = true) }
+                cargarCargos()
+
+            } catch (e: Exception) {
+                println("❌ Error guardando votos: ${e.message}")
+                _votosUiState.update { it.copy(isSaving = false) }
+            }
+        }
+    }
+
+    fun resetVotosState() {
+        _votosUiState.value = VotosUiState()
     }
 }

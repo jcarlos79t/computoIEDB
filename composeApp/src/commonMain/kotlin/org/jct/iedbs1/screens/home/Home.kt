@@ -29,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -44,41 +45,44 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jct.iedbs1.Utils
 import org.jct.iedbs1.models.Cargo
 
-
-// --- Entry Point ---
 @Composable
 fun HomeRoute(
     homeViewModel: HomeViewModel,
-    onNavigateToNuevoCargo: () -> Unit
+    onNavigateToNuevoCargo: () -> Unit,
+    onNavigateToVotos: (Cargo) -> Unit,
+    onNavigateToDetail: (Cargo) -> Unit
 ) {
     val cargos by homeViewModel.cargos.collectAsState()
 
     HomeScreen(
         cargos = cargos,
         viewModel = homeViewModel,
-        onNavigateToNuevoCargo = onNavigateToNuevoCargo
+        onNavigateToNuevoCargo = onNavigateToNuevoCargo,
+        onNavigateToVotos = onNavigateToVotos,
+        onNavigateToDetail = onNavigateToDetail
     )
 }
 
-// --- Pantalla principal ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     cargos: List<Cargo>,
     viewModel: HomeViewModel,
-    onNavigateToNuevoCargo: () -> Unit
+    onNavigateToNuevoCargo: () -> Unit,
+    onNavigateToVotos: (Cargo) -> Unit,
+    onNavigateToDetail: (Cargo) -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = { Header(viewModel) },
-        floatingActionButton = { // 👇 Aquí agregás tu FAB
+        floatingActionButton = {
             FloatingActionButton(
                 onClick = onNavigateToNuevoCargo,
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -90,7 +94,7 @@ fun HomeScreen(
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End // opcional: End o Center
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -100,7 +104,6 @@ fun HomeScreen(
             SearchBar()
 
             if (cargos.isEmpty()) {
-                // Loading state
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -115,10 +118,9 @@ fun HomeScreen(
                 ) {
                     items(cargos) { cargo ->
                         CargoCard(
-                            fecha = Utils.formatFecha(cargo.fecha),
-                            estado = cargo.estado,
-                            titulo = cargo.cargo,
-                            ganador = cargo.ganador
+                            cargo = cargo,
+                            onNavigateToDetail = { onNavigateToDetail(cargo) },
+                            onNavigateToVotos = { onNavigateToVotos(cargo) }
                         )
                     }
                 }
@@ -127,7 +129,6 @@ fun HomeScreen(
     }
 }
 
-// --- Header ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Header(viewModel: HomeViewModel) {
@@ -187,7 +188,6 @@ fun Header(viewModel: HomeViewModel) {
 }
 
 
-// --- SearchBar ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar() {
@@ -203,21 +203,17 @@ fun SearchBar() {
             .fillMaxWidth()
             .padding(16.dp)
             .clip(RoundedCornerShape(34.dp)),
-
-
     )
 }
 
-// --- CargoCard ---
 @Composable
 fun CargoCard(
-    fecha: String,
-    estado: String,
-    titulo: String,
-    ganador: String?
+    cargo: Cargo,
+    onNavigateToDetail: () -> Unit,
+    onNavigateToVotos: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onNavigateToDetail),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -227,17 +223,17 @@ fun CargoCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = fecha.uppercase(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 12.sp)
+                Text(text = Utils.formatFecha(cargo.fecha).uppercase(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 12.sp)
                 Spacer(modifier = Modifier.weight(1f))
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Utils.getColorEstado(estado).copy(alpha = 0.12f))
+                        .background(Utils.getColorEstado(cargo.estado).copy(alpha = 0.12f))
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        estado.uppercase(),
-                        color = Utils.getColorEstado(estado),
+                        cargo.estado.uppercase(),
+                        color = Utils.getColorEstado(cargo.estado),
                         fontWeight = FontWeight.Bold,
                         fontSize = 11.sp
                     )
@@ -246,27 +242,28 @@ fun CargoCard(
 
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                titulo.uppercase(),
+                cargo.cargo.uppercase(),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            ganador?.let {
+            cargo.ganador?.let {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("🥇 GANADOR  $it", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 13.sp)
             }
-
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                Icon(
-                    Icons.Default.ArrowForward,
-                    contentDescription = "Ir",
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-
-                )
+                 IconButton(onClick = onNavigateToVotos) {
+                    Icon(
+                        Icons.Default.ArrowForward,
+                        contentDescription = "Ir a Votos",
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                }
             }
         }
     }

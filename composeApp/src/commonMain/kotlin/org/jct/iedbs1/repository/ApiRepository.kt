@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 
 import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
+import org.jct.iedbs1.models.Votos
 import org.jct.iedbs1.network.httpClient
 
 class ApiRepository(
@@ -18,7 +19,7 @@ class ApiRepository(
     private val baseUrl = "https://rxrdxsqykqlkymbfqypp.supabase.co/rest/v1"
 
     suspend fun getCargos(): List<Cargo> {
-        val response: String = client.get("$baseUrl/Cargo") {
+        val response: String = client.get("$baseUrl/Cargo?order=fecha.desc") {
             headers {
                 append("apikey", apiKey)
                 append(HttpHeaders.Authorization, "Bearer $bearerToken")
@@ -46,19 +47,63 @@ class ApiRepository(
         }.decodeFromString<List<Cargo>>(response).first()
     }
 
+    suspend fun getPostulantes(cargoId: String): List<Postulante> {
+        val response: String = client.get("$baseUrl/Postulante?cargoId=eq.$cargoId") {
+            headers {
+                append("apikey", apiKey)
+                append(HttpHeaders.Authorization, "Bearer $bearerToken")
+            }
+        }.body()
+
+        return Json {
+            ignoreUnknownKeys = true
+        }.decodeFromString<List<Postulante>>(response)
+    }
+
+    suspend fun getVotosForCargo(cargoId: String): List<Votos> {
+        val response: String = client.get("$baseUrl/Votos?cargoId=eq.$cargoId") {
+            headers {
+                append("apikey", apiKey)
+                append(HttpHeaders.Authorization, "Bearer $bearerToken")
+            }
+        }.body()
+        return Json { ignoreUnknownKeys = true }.decodeFromString(response)
+    }
+
+    suspend fun upsertVotos(votosToSave: List<Votos>) {
+        client.post("$baseUrl/Votos") {
+            headers {
+                append("apikey", apiKey)
+                append(HttpHeaders.Authorization, "Bearer $bearerToken")
+                // Tell supabase to merge duplicates instead of failing
+                append("Prefer", "resolution=merge-duplicates")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(votosToSave)
+        }
+    }
+
+    suspend fun updateCargo(cargo: Cargo) {
+        client.patch("$baseUrl/Cargo?id=eq.${cargo.id}") {
+            headers {
+                append("apikey", apiKey)
+                append(HttpHeaders.Authorization, "Bearer $bearerToken")
+                append("Prefer", "return=minimal")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(cargo)
+        }
+    }
+
     suspend fun insertPostulante(postulante: Postulante) {
         val response: String = client.post("$baseUrl/Postulante") {
             headers {
                 append("apikey", apiKey)
                 append(HttpHeaders.Authorization, "Bearer $bearerToken")
-                append("Prefer", "return=representation") // para que devuelva el registro creado
+                append("Prefer", "return=representation")
             }
             contentType(ContentType.Application.Json)
             setBody(postulante)
         }.body()
-
-/*        return Json {
-            ignoreUnknownKeys = true
-        }.decodeFromString<List<Postulante>>(response).first()*/
     }
 }

@@ -23,7 +23,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
@@ -47,6 +46,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import org.jct.iedbs1.models.Postulante
+import org.jct.iedbs1.models.toColor
 
 @Composable
 fun NuevoCargoRoute(
@@ -71,9 +72,17 @@ fun NuevoCargoRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    // This effect runs when the composable is disposed (i.e., when we navigate away).
+    // It's the perfect place to reset the state.
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetState()
+        }
+    }
+
     LaunchedEffect(uiState.saveSuccess) {
         if (uiState.saveSuccess) {
-            viewModel.resetSaveSuccess()
+            // Just navigate back. The DisposableEffect will handle the state reset.
             onNavigateBack()
         }
     }
@@ -217,7 +226,7 @@ fun NuevoCargoHeader(onSaveClick: () -> Unit, onNavigateBack: () -> Unit) {
 
 @Composable
 fun PostulanteCard(postulante: Postulante, onDelete: () -> Unit) {
-    val color = Color(postulante.color)
+    val color = postulante.color.toColor()
     val gradient = Brush.horizontalGradient(
         colors = listOf(color.copy(alpha = 0.0f), color.copy(alpha = 0.5f), color),
         startX = 350f,
@@ -283,7 +292,7 @@ fun NuevoPostulanteDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("NUEVO POSTULANTE", style = MaterialTheme.typography.titleLarge)
+                Text("NUEVO POSTULante", style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(24.dp))
 
                 OutlinedTextField(
