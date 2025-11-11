@@ -3,13 +3,20 @@ package org.jct.iedbs1.screens.new
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
+import org.jct.iedbs1.models.getPostulantesDeEjemplo
 import org.jct.iedbs1.models.toHexString
+import org.jct.iedbs1.repository.ApiRepository
 import kotlin.random.Random
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class NuevoCargoUiState(
     val cargoNombre: String = "",
@@ -20,7 +27,7 @@ data class NuevoCargoUiState(
     // Dialog fields
     val dialogNombre: String = "",
     val dialogApellidos: String = "",
-    val dialogColor: Color = Color.Yellow,
+    val dialogColor: Color = Color.White,
     val dialogGrupo: String = "",
     val dialogGenero: String = ""
 )
@@ -29,10 +36,17 @@ class NuevoCargoViewModel(apiKey: String, bearerToken: String) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NuevoCargoUiState())
     val uiState = _uiState.asStateFlow()
+    val repository = ApiRepository(apiKey, bearerToken)
+
 
     // Options for dropdowns
     val grupos = listOf("Grupo de jóvenes", "Grupo de adultos", "Grupo de embajadores")
     val generos = listOf("Masculino", "Femenino")
+
+    init {
+        // For UI design purposes
+        //_uiState.update { it.copy(postulantes = getPostulantesDeEjemplo()) }
+    }
 
     fun onCargoNombreChange(nombre: String) {
         _uiState.update { it.copy(cargoNombre = nombre) }
@@ -62,6 +76,7 @@ class NuevoCargoViewModel(apiKey: String, bearerToken: String) : ViewModel() {
         _uiState.update { it.copy(showDialog = show) }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     fun addPostulante() {
         val state = _uiState.value
         if (state.dialogNombre.isBlank() || state.dialogApellidos.isBlank() || state.dialogGrupo.isBlank() || state.dialogGenero.isBlank()) {
@@ -70,7 +85,7 @@ class NuevoCargoViewModel(apiKey: String, bearerToken: String) : ViewModel() {
         }
 
         val newPostulante = Postulante(
-            id = Random.nextInt().toString(), // Temp ID
+            id = Uuid.random().toString(),
             nombre = state.dialogNombre.uppercase(),
             apellidos = state.dialogApellidos.uppercase(),
             grupo = state.dialogGrupo,
@@ -84,7 +99,7 @@ class NuevoCargoViewModel(apiKey: String, bearerToken: String) : ViewModel() {
             showDialog = false,
             dialogNombre = "",
             dialogApellidos = "",
-            dialogColor = Color.Yellow,
+            dialogColor = Color.White,
             dialogGrupo = "",
             dialogGenero = ""
         ) }
@@ -96,15 +111,27 @@ class NuevoCargoViewModel(apiKey: String, bearerToken: String) : ViewModel() {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     fun guardarCargo() {
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true) }
-            // TODO: Here you would call your repository to save the cargo and the postulantes
-            // val cargoId = repository.saveCargo(uiState.value.cargoNombre)
-            // uiState.value.postulantes.forEach { postulante ->
-            //     repository.savePostulante(postulante.copy(cargoId = cargoId))
-            // }
-            kotlinx.coroutines.delay(2000) // Simulate network call
+            var cargo = Cargo()
+            try {
+                cargo.id = Uuid.random().toString()
+                cargo.cargo = uiState.value.cargoNombre
+                withContext(Dispatchers.IO) {
+                    repository.insertCargo(cargo)
+                }
+                uiState.value.postulantes.forEach { postulante ->
+                    postulante.cargoId = cargo.id
+                    //repository.insertPostulante(postulante.copy(cargoId = cargoId))
+                    repository.insertPostulante(postulante)
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
+                println("❌ Error insertando cargo: ${e.message}")
+            }
+            // kotlinx.coroutines.delay(2000) // Simulate network call
             _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
         }
     }

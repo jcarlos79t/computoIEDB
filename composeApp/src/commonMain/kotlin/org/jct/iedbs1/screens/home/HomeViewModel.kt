@@ -14,6 +14,8 @@ import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
 import org.jct.iedbs1.models.Votos
 import org.jct.iedbs1.repository.ApiRepository
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 // --- States ---
@@ -110,6 +112,7 @@ class HomeViewModel(
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     fun guardarVotos(cargo: Cargo) {
         viewModelScope.launch {
             _votosUiState.update { it.copy(isSaving = true) }
@@ -120,7 +123,7 @@ class HomeViewModel(
                 val votosToUpsert = state.votos.map { (postulanteId, numVotos) ->
                     Votos(
                         // Supabase usará (cargoId, postulanteId) como clave para el upsert
-                        id = "${cargo.id}_${postulanteId}", // Clave compuesta para el upsert
+                        id = Uuid.random().toString(),
                         cargoId = cargo.id,
                         postulanteId = postulanteId,
                         votos = numVotos

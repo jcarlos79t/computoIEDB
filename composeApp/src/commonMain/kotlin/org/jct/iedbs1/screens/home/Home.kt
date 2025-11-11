@@ -94,7 +94,7 @@ fun HomeScreen(
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         Column(
             modifier = Modifier
