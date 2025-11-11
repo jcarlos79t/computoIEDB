@@ -14,8 +14,6 @@ import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
 import org.jct.iedbs1.models.Votos
 import org.jct.iedbs1.repository.ApiRepository
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 
 // --- States ---
@@ -81,7 +79,7 @@ class HomeViewModel(
                 val votosPrevios = votosPreviosDeferred.await()
 
                 // Crear el mapa inicial de votos a partir de los datos de la tabla Votos
-                val initialVotosMap = votosPrevios.associate { it.postulanteId to it.votos }
+                val initialVotosMap = postulantes.associate { p -> p.id to (votosPrevios.find { it.postulanteId == p.id }?.votos ?: 0) }
                 val initialTotalVotos = initialVotosMap.values.sum()
 
                 // Ordenar la lista de postulantes por votos (de mayor a menor)
@@ -112,7 +110,6 @@ class HomeViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun guardarVotos(cargo: Cargo) {
         viewModelScope.launch {
             _votosUiState.update { it.copy(isSaving = true) }
@@ -120,13 +117,13 @@ class HomeViewModel(
                 val state = _votosUiState.value
 
                 // 1. Preparar la lista de objetos Votos para enviar a Supabase
-                val votosToUpsert = state.votos.map { (postulanteId, numVotos) ->
+                val votosToUpsert = state.postulantes.map { postulante ->
                     Votos(
-                        // Supabase usará (cargoId, postulanteId) como clave para el upsert
-                        id = Uuid.random().toString(),
+                        // Usar una clave compuesta y predecible para el upsert
+                        id = "${cargo.id}_${postulante.id}", 
                         cargoId = cargo.id,
-                        postulanteId = postulanteId,
-                        votos = numVotos
+                        postulanteId = postulante.id,
+                        votos = state.votos[postulante.id] ?: 0
                     )
                 }
 
