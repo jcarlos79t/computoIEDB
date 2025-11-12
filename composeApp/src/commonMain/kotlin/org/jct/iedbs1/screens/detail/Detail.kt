@@ -1,6 +1,7 @@
 package org.jct.iedbs1.screens.detail
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -144,10 +148,26 @@ fun TotalVotosHeader(totalVotos: Int) {
 fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
     val porcentaje = if (totalVotos > 0) votos.toFloat() / totalVotos.toFloat() else 0f
 
+    var animationPlayed by remember { mutableStateOf(false) }
+
     val animatedFraction by animateFloatAsState(
-        targetValue = porcentaje,
-        animationSpec = tween(durationMillis = 1000, delayMillis = 200)
+        targetValue = if (animationPlayed) porcentaje else 0f,
+        animationSpec = tween(durationMillis = 3000, delayMillis = 600)
     )
+
+    val animatedVotos by animateIntAsState(
+        targetValue = if (animationPlayed) votos else 0,
+        animationSpec = tween(durationMillis = 3000, delayMillis = 600)
+    )
+
+    val animatedPercentage by animateFloatAsState(
+        targetValue = if (animationPlayed) (porcentaje * 100) else 0f,
+        animationSpec = tween(durationMillis = 3000, delayMillis = 600)
+    )
+
+    LaunchedEffect(Unit) {
+        animationPlayed = true
+    }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Box(
@@ -170,13 +190,13 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = votos.toString(),
+                    text = animatedVotos.toString(),
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
                 Text(
-                    text = "${(porcentaje * 100).toInt()}%",
+                    text = "${animatedPercentage.toInt()}%",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp

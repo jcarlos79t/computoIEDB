@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 
 import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
+import org.jct.iedbs1.models.Usuario
 import org.jct.iedbs1.models.Votos
 import org.jct.iedbs1.network.httpClient
 
@@ -105,5 +106,18 @@ class ApiRepository(
             contentType(ContentType.Application.Json)
             setBody(postulante)
         }.body()
+    }
+
+    suspend fun getUserByUsername(username: String): Usuario? {
+        val response: String = client.get("$baseUrl/usuario?user=eq.$username") {
+            headers {
+                append("apikey", apiKey)
+                append(HttpHeaders.Authorization, "Bearer $bearerToken")
+            }
+        }.body()
+
+        return Json {
+            ignoreUnknownKeys = true
+        }.decodeFromString<List<Usuario>>(response).firstOrNull()
     }
 }

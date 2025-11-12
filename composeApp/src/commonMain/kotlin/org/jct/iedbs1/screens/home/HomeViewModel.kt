@@ -12,18 +12,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
+import org.jct.iedbs1.models.Usuario
 import org.jct.iedbs1.models.Votos
 import org.jct.iedbs1.repository.ApiRepository
 
 
 // --- States ---
-sealed class SaveState {
-    object Saving : SaveState()
-    object Success : SaveState()
-    data class Error(val message: String) : SaveState()
-    object Idle : SaveState()
-}
-
 data class VotosUiState(
     val postulantes: List<Postulante> = emptyList(),
     val votos: Map<String, Int> = emptyMap(),
@@ -33,6 +27,14 @@ data class VotosUiState(
     val totalVotos: Int = 0
 )
 
+data class LoginUiState(
+    val username: String = "",
+    val password: String = "",
+    val isLoading: Boolean = false,
+    val loginSuccess: Boolean = false,
+    val loginError: String? = null
+)
+
 // --- ViewModel ---
 class HomeViewModel(
     apiKey: String,
@@ -40,25 +42,28 @@ class HomeViewModel(
 ) : ViewModel() {
     private val repository = ApiRepository(apiKey, bearerToken)
 
-    // Home Screen State
+    // --- State Holders ---
     private val _cargos = MutableStateFlow<List<Cargo>>(emptyList())
     val cargos: StateFlow<List<Cargo>> = _cargos.asStateFlow()
 
-    // RegistrarVotos & Detail Screen State
     private val _votosUiState = MutableStateFlow(VotosUiState())
     val votosUiState = _votosUiState.asStateFlow()
+
+    private val _loginUiState = MutableStateFlow(LoginUiState())
+    val loginUiState = _loginUiState.asStateFlow()
+
+    private val _loggedInUser = MutableStateFlow<Usuario?>(null)
+    val loggedInUser: StateFlow<Usuario?> = _loggedInUser.asStateFlow()
 
     init {
         cargarCargos()
     }
 
-    // --- Home Screen Functions ---
+    // --- Home Screen ---
     fun cargarCargos() {
         viewModelScope.launch {
             try {
-                val result = withContext(Dispatchers.IO) {
-                    repository.getCargos()
-                }
+                val result = withContext(Dispatchers.IO) { repository.getCargos() }
                 _cargos.value = result
             } catch (e: Exception) {
                 println("❌ Error cargando cargos: ${e.message}")
@@ -66,24 +71,18 @@ class HomeViewModel(
         }
     }
 
-    // --- RegistrarVotos & Detail Screen Functions ---
+    // --- Votos & Detail Screens ---
     fun cargarDatosVotacion(cargoId: String) {
         viewModelScope.launch {
             _votosUiState.update { it.copy(isLoading = true) }
             try {
-                // Cargar postulantes y votos existentes en paralelo
                 val postulantesDeferred = async(Dispatchers.IO) { repository.getPostulantes(cargoId) }
                 val votosPreviosDeferred = async(Dispatchers.IO) { repository.getVotosForCargo(cargoId) }
-
                 val postulantes = postulantesDeferred.await()
                 val votosPrevios = votosPreviosDeferred.await()
-
-                // Crear el mapa inicial de votos a partir de los datos de la tabla Votos
                 val initialVotosMap = postulantes.associate { p -> p.id to (votosPrevios.find { it.postulanteId == p.id }?.votos ?: 0) }
                 val initialTotalVotos = initialVotosMap.values.sum()
-
-                // Ordenar la lista de postulantes por votos (de mayor a menor)
-                val postulantesOrdenados = postulantes.sortedByDescending { initialVotosMap[it.id] ?: 0 }
+                val postulantesOrdenados = postulantes //.sortedByDescending { initialVotosMap[it.id] ?: 0 }
 
                 _votosUiState.update { state ->
                     state.copy(
@@ -115,44 +114,23 @@ class HomeViewModel(
             _votosUiState.update { it.copy(isSaving = true) }
             try {
                 val state = _votosUiState.value
-
-                // 1. Preparar la lista de objetos Votos para enviar a Supabase
-                val votosToUpsert = state.postulantes.map { postulante ->
-                    Votos(
-                        // Usar una clave compuesta y predecible para el upsert
-                        id = "${cargo.id}_${postulante.id}", 
-                        cargoId = cargo.id,
-                        postulanteId = postulante.id,
-                        votos = state.votos[postulante.id] ?: 0
-                    )
+                val votosToUpsert = state.postulantes.map {
+                    Votos(id = "${cargo.id}_${it.id}", cargoId = cargo.id, postulanteId = it.id, votos = state.votos[it.id] ?: 0)
                 }
-
                 if (votosToUpsert.isNotEmpty()) {
-                    withContext(Dispatchers.IO) {
-                        repository.upsertVotos(votosToUpsert)
-                    }
+                    withContext(Dispatchers.IO) { repository.upsertVotos(votosToUpsert) }
                 }
-
-                // 2. Encontrar al ganador (esta lógica no cambia)
                 val ganadorId = state.votos.maxByOrNull { it.value }?.key
                 val postulanteGanador = state.postulantes.find { it.id == ganadorId }
-
-                // 3. Actualizar el objeto Cargo principal
                 val updatedCargo = cargo.copy(
                     estado = "FINALIZADO",
                     votosEmitidos = state.totalVotos,
                     ganador = postulanteGanador?.let { "${it.nombre} ${it.apellidos}" },
                     colorGanador = postulanteGanador?.color ?: ""
                 )
-
-                withContext(Dispatchers.IO) {
-                    repository.updateCargo(updatedCargo)
-                }
-
-                // 4. Actualizar el estado de la UI y recargar la home
+                withContext(Dispatchers.IO) { repository.updateCargo(updatedCargo) }
                 _votosUiState.update { it.copy(isSaving = false, saveSuccess = true) }
                 cargarCargos()
-
             } catch (e: Exception) {
                 println("❌ Error guardando votos: ${e.message}")
                 _votosUiState.update { it.copy(isSaving = false) }
@@ -162,5 +140,42 @@ class HomeViewModel(
 
     fun resetVotosState() {
         _votosUiState.value = VotosUiState()
+    }
+
+    // --- Login Screen ---
+    fun onUsernameChange(username: String) {
+        _loginUiState.update { it.copy(username = username) }
+    }
+
+    fun onPasswordChange(password: String) {
+        _loginUiState.update { it.copy(password = password) }
+    }
+
+    fun login() {
+        viewModelScope.launch {
+            _loginUiState.update { it.copy(isLoading = true, loginError = null) }
+            try {
+                val state = _loginUiState.value
+                val userFromDb = withContext(Dispatchers.IO) { repository.getUserByUsername(state.username) }
+
+                if (userFromDb != null && userFromDb.password == state.password) {
+                    _loggedInUser.value = userFromDb.copy(valido = true)
+                    _loginUiState.update { it.copy(isLoading = false, loginSuccess = true) }
+                } else {
+                    _loginUiState.update { it.copy(isLoading = false, loginError = "Usuario o contraseña incorrectos") }
+                }
+            } catch (e: Exception) {
+                println("❌ Error en el login: ${e.message}")
+                _loginUiState.update { it.copy(isLoading = false, loginError = "Error de conexión") }
+            }
+        }
+    }
+
+    fun logout() {
+        _loggedInUser.value = null
+    }
+
+    fun resetLoginState() {
+        _loginUiState.value = LoginUiState()
     }
 }

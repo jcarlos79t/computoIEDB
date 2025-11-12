@@ -57,16 +57,20 @@ fun HomeRoute(
     homeViewModel: HomeViewModel,
     onNavigateToNuevoCargo: () -> Unit,
     onNavigateToVotos: (Cargo) -> Unit,
-    onNavigateToDetail: (Cargo) -> Unit
+    onNavigateToDetail: (Cargo) -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     val cargos by homeViewModel.cargos.collectAsState()
+    val loggedInUser by homeViewModel.loggedInUser.collectAsState()
 
     HomeScreen(
         cargos = cargos,
         viewModel = homeViewModel,
         onNavigateToNuevoCargo = onNavigateToNuevoCargo,
         onNavigateToVotos = onNavigateToVotos,
-        onNavigateToDetail = onNavigateToDetail
+        onNavigateToDetail = onNavigateToDetail,
+        onNavigateToLogin = onNavigateToLogin,
+        isUserLoggedIn = loggedInUser?.valido == true
     )
 }
 
@@ -77,24 +81,28 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onNavigateToNuevoCargo: () -> Unit,
     onNavigateToVotos: (Cargo) -> Unit,
-    onNavigateToDetail: (Cargo) -> Unit
+    onNavigateToDetail: (Cargo) -> Unit,
+    onNavigateToLogin: () -> Unit,
+    isUserLoggedIn: Boolean
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { Header(viewModel) },
+        topBar = { Header(viewModel, onNavigateToLogin) },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onNavigateToNuevoCargo,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Agregar cargo"
-                )
+            if (isUserLoggedIn) {
+                FloatingActionButton(
+                    onClick = onNavigateToNuevoCargo,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Agregar cargo"
+                    )
+                }
             }
         },
-        floatingActionButtonPosition = FabPosition.Center
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -120,7 +128,8 @@ fun HomeScreen(
                         CargoCard(
                             cargo = cargo,
                             onNavigateToDetail = { onNavigateToDetail(cargo) },
-                            onNavigateToVotos = { onNavigateToVotos(cargo) }
+                            onNavigateToVotos = { onNavigateToVotos(cargo) },
+                            showAdminActions = isUserLoggedIn
                         )
                     }
                 }
@@ -131,18 +140,20 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(viewModel: HomeViewModel) {
+fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
         navigationIcon = {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Logo",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .size(35.dp)
-            )
+            IconButton(onClick = onNavigateToLogin) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Login",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .size(35.dp)
+                )
+            }
         },
         title = {
             Column(
@@ -210,7 +221,8 @@ fun SearchBar() {
 fun CargoCard(
     cargo: Cargo,
     onNavigateToDetail: () -> Unit,
-    onNavigateToVotos: () -> Unit
+    onNavigateToVotos: () -> Unit,
+    showAdminActions: Boolean
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onNavigateToDetail),
@@ -252,17 +264,19 @@ fun CargoCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("🥇 GANADOR  $it", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 13.sp)
             }
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                 IconButton(onClick = onNavigateToVotos) {
-                    Icon(
-                        Icons.Default.ArrowForward,
-                        contentDescription = "Ir a Votos",
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
+
+            if (showAdminActions) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(onClick = onNavigateToVotos) {
+                        Icon(
+                            Icons.Default.ArrowForward,
+                            contentDescription = "Ir a Votos",
+                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
                 }
             }
         }
