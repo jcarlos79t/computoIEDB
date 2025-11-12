@@ -13,6 +13,7 @@ import org.jct.iedbs1.screens.home.HomeViewModel
 import org.jct.iedbs1.screens.new.NuevoCargoRoute
 import org.jct.iedbs1.screens.new.NuevoCargoViewModel
 import org.jct.iedbs1.screens.votos.RegistrarVotosRoute
+import androidx.navigation.get
 
 
 @Composable
@@ -45,7 +46,8 @@ fun AppNavigation(apikey: String, bearerToken: String) {
             route = "registrar_votos/{cargoId}",
             arguments = listOf(navArgument("cargoId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val cargoId = backStackEntry.arguments?.getString("cargoId")
+
+            val cargoId = backStackEntry.savedStateHandle.get<String>("cargoId")
             val cargo = homeViewModel.cargos.value.find { it.id == cargoId }
 
             if (cargo != null) {
@@ -62,7 +64,7 @@ fun AppNavigation(apikey: String, bearerToken: String) {
             route = "detail/{cargoId}",
             arguments = listOf(navArgument("cargoId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val cargoId = backStackEntry.arguments?.getString("cargoId")
+             val cargoId = backStackEntry.savedStateHandle.get<String>("cargoId")
             val cargo = homeViewModel.cargos.value.find { it.id == cargoId }
 
             if (cargo != null) {
