@@ -97,6 +97,8 @@ class ApiRepository(
     }
 
     suspend fun insertPostulante(postulante: Postulante) {
+        postulante.nombre.uppercase()
+        postulante.apellidos.uppercase()
         val response: String = client.post("$baseUrl/Postulante") {
             headers {
                 append("apikey", apiKey)

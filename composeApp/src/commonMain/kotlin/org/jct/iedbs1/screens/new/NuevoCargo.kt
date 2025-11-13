@@ -407,8 +407,9 @@ fun ColorPicker(
     selectedColor: Color,
     onColorSelected: (Color) -> Unit
 ) {
+    //COLORES DEL PICKER
     val colors = listOf(
-        Color(0xFFFF0000), Color(0xFFFFFF00), Color(0xFF00AD43),
+        Color(0xFFFF0000), Color(0xFFF4CA16), Color(0xFF00AD43),
         Color(0xFF318CE7), Color(0xFFF07427), Color(0xFF9457EB)
     )
     Spacer(Modifier.height(8.dp))

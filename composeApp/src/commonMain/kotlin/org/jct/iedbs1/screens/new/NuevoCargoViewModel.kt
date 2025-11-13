@@ -113,12 +113,18 @@ class NuevoCargoViewModel(apiKey: String, bearerToken: String) : ViewModel() {
 
     @OptIn(ExperimentalUuidApi::class)
     fun guardarCargo() {
+        val state = _uiState.value
+        if (state.cargoNombre.isBlank() || state.postulantes.isEmpty()) {
+            // Handle error - maybe show a toast or a message
+            return
+        }
+
         viewModelScope.launch {
             _uiState.update { it.copy(isSaving = true) }
             var cargo = Cargo()
             try {
                 cargo.id = Uuid.random().toString()
-                cargo.cargo = uiState.value.cargoNombre
+                cargo.cargo = uiState.value.cargoNombre.uppercase()
                 withContext(Dispatchers.IO) {
                     repository.insertCargo(cargo)
                 }
