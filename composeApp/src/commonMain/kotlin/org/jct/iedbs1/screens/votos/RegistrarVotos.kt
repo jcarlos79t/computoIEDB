@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -143,27 +144,59 @@ fun RegistrarVotosScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VotosHeader(onSaveClick: () -> Unit, onNavigateBack: () -> Unit) {
-    TopAppBar(
-        title = { Text("REGISTRAR VOTOS") },
-        navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
-            }
-        },
-        actions = {
-            IconButton(onClick = onSaveClick) {
-                Icon(Icons.Default.Save, contentDescription = "Guardar")
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+fun VotosHeader(
+    onSaveClick: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(
+                RoundedCornerShape(
+                    bottomStart = 24.dp,
+                    bottomEnd = 24.dp
+                )
+            ),
+        color = MaterialTheme.colorScheme.primary,
+        shadowElevation = 8.dp,
+        tonalElevation = 3.dp
+    ) {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "REGISTRAR VOTOS",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Atrás",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            },
+            actions = {
+                IconButton(onClick = onSaveClick) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = "Guardar",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent // El color viene del Surface
+            )
         )
-    )
+    }
 }
+
 
 @Composable
 fun TotalVotosHeader(totalVotos: Int) {

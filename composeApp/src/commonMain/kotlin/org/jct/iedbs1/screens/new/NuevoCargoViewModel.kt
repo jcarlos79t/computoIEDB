@@ -40,7 +40,7 @@ class NuevoCargoViewModel(apiKey: String, bearerToken: String) : ViewModel() {
 
 
     // Options for dropdowns
-    val grupos = listOf("Grupo de jóvenes", "Grupo de adultos", "Grupo de embajadores")
+    val grupos = listOf("Soldados del maestro", "Embajadores", "Emanuel","Transformados x Cristo", "Señoras")
     val generos = listOf("Masculino", "Femenino")
 
     init {

@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -45,12 +46,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jct.iedbs1.Utils
 import org.jct.iedbs1.models.Cargo
+import org.jetbrains.compose.resources.Font
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Black
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Bold
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Light
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Medium
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Regular
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_SemiBold
+import votacion_iedbs1.composeapp.generated.resources.Res
 
 @Composable
 fun HomeRoute(
@@ -109,7 +120,7 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            SearchBar()
+            //SearchBar()
 
             if (cargos.isEmpty()) {
                 Box(
@@ -138,7 +149,7 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
     TopAppBar(
@@ -196,7 +207,87 @@ fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
             )
         }
     )
+}*/
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
+    // Surface con esquinas inferiores redondeadas y sombra suave
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(
+                RoundedCornerShape(
+                    bottomStart = 24.dp,
+                    bottomEnd = 24.dp
+                )
+            ),
+        color = MaterialTheme.colorScheme.primary,
+        shadowElevation = 8.dp, // <-- sombra más marcada
+        tonalElevation = 3.dp   // <-- añade un efecto de elevación más realista en Material3
+    ) {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent // usamos el color del Surface
+            ),
+            navigationIcon = {
+                IconButton(onClick = onNavigateToLogin) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Login",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .size(35.dp)
+                    )
+                }
+            },
+            title = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "ELECCIONES 2026-2027",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 5.sp,
+                        fontFamily = FontFamily( Font( Res.font.Montserrat_Black))
+                    )
+                    Text(
+                        text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                        fontSize = 10.sp,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 10.sp,
+                        fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
+                    )
+                    Text(
+                        text = "Dep. Sistemas ©2025 Area AudioVisual",
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                        fontSize = 9.sp,
+                        textAlign = TextAlign.Center,
+                        fontFamily = FontFamily( Font( Res.font.Montserrat_Medium))
+                    )
+                }
+            },
+            actions = {
+                Icon(
+                    imageVector = Icons.Default.Sync,
+                    contentDescription = "Sincronizar",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(end = 12.dp)
+                        .clickable { viewModel.cargarCargos() }
+                )
+            }
+        )
+    }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -235,7 +326,11 @@ fun CargoCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = Utils.formatFecha(cargo.fecha).uppercase(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 12.sp)
+                Text(text = Utils.formatFecha(cargo.fecha).uppercase(),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily( Font( Res.font.Montserrat_Regular))
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 Box(
                     modifier = Modifier
@@ -247,7 +342,8 @@ fun CargoCard(
                         cargo.estado.uppercase(),
                         color = Utils.getColorEstado(cargo.estado),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
                     )
                 }
             }
@@ -257,12 +353,17 @@ fun CargoCard(
                 cargo.cargo.uppercase(),
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily( Font( Res.font.Montserrat_Bold))
             )
 
             cargo.ganador?.let {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("🥇 GANADOR  $it", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), fontSize = 13.sp)
+                Text("🥇 GANADOR  $it",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    fontSize = 13.sp,
+                    fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
+                )
             }
 
             if (showAdminActions) {

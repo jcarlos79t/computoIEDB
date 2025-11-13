@@ -41,6 +41,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -58,12 +59,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import org.jct.iedbs1.models.Postulante
 import org.jct.iedbs1.models.toColor
+import org.jetbrains.compose.resources.Font
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Bold
+import votacion_iedbs1.composeapp.generated.resources.Res
 
 @Composable
 fun NuevoCargoRoute(
@@ -149,8 +154,8 @@ fun NuevoCargoScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onShowDialog,
-                containerColor = Color(0xFF25D366),
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar Postulante")
             }
@@ -202,26 +207,57 @@ fun NuevoCargoScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NuevoCargoHeader(onSaveClick: () -> Unit, onNavigateBack: () -> Unit) {
-    TopAppBar(
-        title = { Text("NUEVO CARGO") },
-        navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
-            }
-        },
-        actions = {
-            IconButton(onClick = onSaveClick) {
-                Icon(Icons.Default.Save, contentDescription = "Guardar")
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+fun NuevoCargoHeader(
+    onSaveClick: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(
+                RoundedCornerShape(
+                    bottomStart = 24.dp,
+                    bottomEnd = 24.dp
+                )
+            ),
+        color = MaterialTheme.colorScheme.primary,
+        shadowElevation = 8.dp,
+        tonalElevation = 3.dp
+    ) {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "NUEVO CARGO",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Atrás",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            },
+            actions = {
+                IconButton(onClick = onSaveClick) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = "Guardar",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent // usamos el color del Surface
+            )
         )
-    )
+    }
 }
 
 @Composable
@@ -229,19 +265,19 @@ fun PostulanteCard(postulante: Postulante, onDelete: () -> Unit) {
     val color = postulante.color.toColor()
     val gradient = Brush.horizontalGradient(
         colors = listOf(color.copy(alpha = 0.0f), color.copy(alpha = 0.5f), color),
-        startX = 350f,
+        startX = 450f,
     )
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
         Box {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(gradient, alpha = 0.4f)
+                    .background(gradient, alpha = 0.9f)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -250,7 +286,8 @@ fun PostulanteCard(postulante: Postulante, onDelete: () -> Unit) {
                         text = "${postulante.nombre} ${postulante.apellidos}",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontFamily = FontFamily( Font( Res.font.Montserrat_Bold))
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
@@ -292,8 +329,8 @@ fun NuevoPostulanteDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("NUEVO POSTULante", style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.height(24.dp))
+                Text("NUEVO POSTULANTE", style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.height(20.dp))
 
                 OutlinedTextField(
                     value = uiState.dialogNombre,
@@ -327,7 +364,7 @@ fun NuevoPostulanteDialog(
                 Spacer(Modifier.height(16.dp))
 
                 Dropdown(
-                    label = "ELIJA EL GRUPO",
+                    label = "SOCIEDAD",
                     options = grupos,
                     selected = uiState.dialogGrupo,
                     onSelected = onGrupoChange
@@ -352,9 +389,12 @@ fun NuevoPostulanteDialog(
                     Spacer(Modifier.width(8.dp))
                     Button(
                         onClick = onAddPostulante,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
-                        Text("ACEPTAR")
+                        Text("AGREGAR")
                     }
                 }
             }
@@ -368,8 +408,8 @@ fun ColorPicker(
     onColorSelected: (Color) -> Unit
 ) {
     val colors = listOf(
-        Color(0xFFFFA726), Color(0xFF66BB6A), Color(0xFFEF5350),
-        Color(0xFFAB47BC), Color(0xFFFFCA28), Color(0xFF29B6F6)
+        Color(0xFFFF0000), Color(0xFFFFFF00), Color(0xFF00AD43),
+        Color(0xFF318CE7), Color(0xFFF07427), Color(0xFF9457EB)
     )
     Spacer(Modifier.height(8.dp))
     Row(
