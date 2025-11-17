@@ -1,8 +1,10 @@
 package org.jct.iedbs1.screens.detail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -56,7 +58,6 @@ import org.jct.iedbs1.screens.home.HomeViewModel
 import org.jetbrains.compose.resources.Font
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Black
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Bold
-import votacion_iedbs1.composeapp.generated.resources.Montserrat_Light
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Medium
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_SemiBold
 import votacion_iedbs1.composeapp.generated.resources.Res
@@ -82,7 +83,8 @@ fun DetailRoute(
     DetailScreen(
         cargoNombre = cargo.cargo,
         uiState = uiState,
-        onNavigateBack = onNavigateBack
+        onNavigateBack = onNavigateBack,
+        onSync = { viewModel.cargarDatosVotacion(cargo.id) }
     )
 }
 
@@ -91,10 +93,11 @@ fun DetailRoute(
 fun DetailScreen(
     cargoNombre: String,
     uiState: org.jct.iedbs1.screens.home.VotosUiState,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onSync: () -> Unit
 ) {
     Scaffold(
-        topBar = { DetailHeader(title = cargoNombre.uppercase(), onNavigateBack = onNavigateBack) }
+        topBar = { DetailHeader(title = cargoNombre.uppercase(), onNavigateBack = onNavigateBack, onSync = onSync) }
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -126,27 +129,9 @@ fun DetailScreen(
     }
 }
 
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DetailHeader(title: String, onNavigateBack: () -> Unit) {
-    TopAppBar(
-        title = { Text(title) },
-        navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        )
-    )
-}*/
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailHeader(title: String, onNavigateBack: () -> Unit) {
+fun DetailHeader(title: String, onNavigateBack: () -> Unit, onSync: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,6 +165,16 @@ fun DetailHeader(title: String, onNavigateBack: () -> Unit) {
                     )
                 }
             },
+            actions = {
+                IconButton(onClick = onSync) {
+                    Icon(
+                        imageVector = Icons.Default.Sync,
+                        contentDescription = "Sincronizar",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent // el color lo da el Surface
             )
@@ -191,47 +186,84 @@ fun DetailHeader(title: String, onNavigateBack: () -> Unit) {
 @Composable
 fun TotalVotosHeader(totalVotos: Int) {
 
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        visible = true
+    }
+
+    val animatedTotalVotos by animateIntAsState(
+        targetValue = if (visible) totalVotos else 0,
+        animationSpec = tween(durationMillis = 1500, delayMillis = 200)
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "ELECCIONES 2026-2027",
-            fontWeight = FontWeight.Bold,
-            //color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-            lineHeight = 5.sp,
-            fontFamily = FontFamily( Font( Res.font.Montserrat_Black))
-        )
-        Text(
-            text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-            //color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = 10.sp,
-            textAlign = TextAlign.Center,
-            lineHeight = 10.sp,
-            fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
-        )
-        Text(
-            text = "Dep. Sistemas ©2025 Area AudioVisual",
-            //color = MaterialTheme.colorScheme.onPrimary,
-            fontSize = 9.sp,
-            textAlign = TextAlign.Center,
-            fontFamily = FontFamily( Font( Res.font.Montserrat_Medium))
-        )
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(animationSpec = tween(1000))
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "ELECCIONES 2026-2027",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 5.sp,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
+                )
+                Text(
+                    text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
+                    fontSize = 10.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 10.sp,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
+                )
+                Text(
+                    text = "Dep. Sistemas ©2025 Area AudioVisual",
+                    fontSize = 9.sp,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
+                )
+            }
+        }
+
         Spacer(Modifier.height(16.dp))
-        Row {
-            Text("Total votos:", fontSize = 20.sp,  fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold)))
-            Spacer(Modifier.width(8.dp))
-            Text(totalVotos.toString(), fontSize = 20.sp, fontWeight = FontWeight.Bold,  fontFamily = FontFamily( Font( Res.font.Montserrat_Black)))
-            Spacer(Modifier.width(16.dp))
-            Text("|", fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
-            Spacer(Modifier.width(16.dp))
-            Text("100%", fontSize = 20.sp, fontWeight = FontWeight.Bold,  fontFamily = FontFamily( Font( Res.font.Montserrat_Bold)))
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(animationSpec = tween(durationMillis = 1000, delayMillis = 200))
+        ) {
+            Row {
+                Text(
+                    "Total votos:",
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    animatedTotalVotos.toString(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
+                )
+                Spacer(Modifier.width(16.dp))
+                Text(
+                    "|",
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
+                Spacer(Modifier.width(16.dp))
+                Text(
+                    "100%",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Bold))
+                )
+            }
         }
     }
-
-
 }
 
 @Composable
@@ -242,17 +274,17 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
 
     val animatedFraction by animateFloatAsState(
         targetValue = if (animationPlayed) porcentaje else 0f,
-        animationSpec = tween(durationMillis = 3000, delayMillis = 600)
+        animationSpec = tween(durationMillis = 2000, delayMillis = 600)
     )
 
     val animatedVotos by animateIntAsState(
         targetValue = if (animationPlayed) votos else 0,
-        animationSpec = tween(durationMillis = 3000, delayMillis = 600)
+        animationSpec = tween(durationMillis = 2000, delayMillis = 600)
     )
 
     val animatedPercentage by animateFloatAsState(
         targetValue = if (animationPlayed) (porcentaje * 100) else 0f,
-        animationSpec = tween(durationMillis = 3000, delayMillis = 600)
+        animationSpec = tween(durationMillis = 2000, delayMillis = 600)
     )
 
     LaunchedEffect(Unit) {
@@ -260,57 +292,72 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
+        AnimatedVisibility(
+            visible = animationPlayed,
+            enter = fadeIn(animationSpec = tween(durationMillis = 800, delayMillis = 400))
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(animatedFraction)
+                    .fillMaxWidth()
                     .height(100.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(postulante.color.toColor())
-            )
-            Row(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .background(MaterialTheme.colorScheme.primaryContainer)
             ) {
-                Text(
-                    text = animatedVotos.toString(),
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp,
-                    fontFamily = FontFamily( Font( Res.font.Montserrat_Black))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(animatedFraction)
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(postulante.color.toColor())
                 )
-                Text(
-                    text = "${animatedPercentage.toInt()}%",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 27.sp,
-                    fontFamily = FontFamily( Font( Res.font.Montserrat_Bold))
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        text = animatedVotos.toString(),
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
+                    )
+                    Text(
+                        text = "${animatedPercentage.toInt()}%",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 27.sp,
+                        fontFamily = FontFamily(Font(Res.font.Montserrat_Bold))
+                    )
+                }
             }
         }
 
         Spacer(Modifier.height(8.dp))
 
-        Text(
-            text = "${postulante.nombre} ${postulante.apellidos}",
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(start = 4.dp),
-            fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
-        )
-        Text(
-            text = postulante.grupo,
-            fontSize = 17.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            modifier = Modifier.padding(start = 4.dp),
-            fontFamily = FontFamily( Font( Res.font.Montserrat_Medium))
-        )
+        AnimatedVisibility(
+            visible = animationPlayed,
+            enter = fadeIn(animationSpec = tween(durationMillis = 1000, delayMillis = 1000))
+        ) {
+            Column {
+                Text(
+                    text = "${postulante.nombre} ${postulante.apellidos}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(start = 4.dp),
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
+                )
+                Text(
+                    text = postulante.grupo,
+                    fontSize = 17.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    modifier = Modifier.padding(start = 4.dp),
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
+                )
+            }
+        }
     }
 }
