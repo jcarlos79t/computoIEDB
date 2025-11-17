@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -33,7 +35,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -57,10 +58,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -321,6 +327,8 @@ fun NuevoPostulanteDialog(
     grupos: List<String>,
     generos: List<String>
 ) {
+    val focusManager = LocalFocusManager.current
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(16.dp),
@@ -332,21 +340,52 @@ fun NuevoPostulanteDialog(
                 Text("NUEVO POSTULANTE", style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(20.dp))
 
-                OutlinedTextField(
+                OutlinedTextFieldWithCounter(
                     value = uiState.dialogNombre,
                     onValueChange = onNombreChange,
-                    label = { Text("Escriba el nombre") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    label = "Escriba el nombre",
+                    maxLength = 50,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    })
                 )
                 Spacer(Modifier.height(16.dp))
-                OutlinedTextField(
+                OutlinedTextFieldWithCounter(
                     value = uiState.dialogApellidos,
                     onValueChange = onApellidosChange,
+                    label = "Escriba el apellido",
+                    maxLength = 50,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    })
+                )
+
+   /*             OutlinedTextField(
+                    value = uiState.dialogNombre,
+                    onValueChange = { if (it.length <= 50) onNombreChange(it) },
+                    label = { Text("Escriba el nombre") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+                    //counter = { Text("${uiState.dialogNombre.length} / 50") }
+                )*/
+     /*           Spacer(Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = uiState.dialogApellidos,
+                    onValueChange = { if (it.length <= 50) onApellidosChange(it) },
                     label = { Text("Escriba el apellido") },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
-                )
+                    shape = RoundedCornerShape(16.dp),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+
+                    //counter = { Text("${uiState.dialogApellidos.length} / 50") }
+                ) */
                 Spacer(Modifier.height(16.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -401,6 +440,52 @@ fun NuevoPostulanteDialog(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OutlinedTextFieldWithCounter(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    maxLength: Int,
+    modifier: Modifier = Modifier,
+    singleLine: Boolean = true,
+    shape: Shape = RoundedCornerShape(16.dp),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+) {
+    Column(modifier = modifier) {
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = {
+                if (it.length <= maxLength) onValueChange(it)
+            },
+            label = { Text(label) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = singleLine,
+            shape = shape,
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+        )
+
+        val isNearLimit = value.length >= maxLength - 5
+
+        Text(
+            text = "${value.length} / $maxLength",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+            textAlign = TextAlign.End,
+            color = if (isNearLimit)
+                MaterialTheme.colorScheme.error
+            else
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            fontSize = 12.sp
+        )
+    }
+}
+
 
 @Composable
 fun ColorPicker(

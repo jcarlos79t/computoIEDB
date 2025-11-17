@@ -35,6 +35,18 @@ data class LoginUiState(
     val loginError: String? = null
 )
 
+data class ReportChartData(
+    val votosPorGrupo: Map<String, Int> = emptyMap(),
+    val votosPorGenero: Map<String, Int> = emptyMap(),
+    val participacionPorCargo: List<Pair<String, Int>> = emptyList(),
+    val postulantesPorCargo: List<Pair<String, Int>> = emptyList()
+)
+
+data class ReportUiState(
+    val isLoading: Boolean = true,
+    val chartData: ReportChartData = ReportChartData()
+)
+
 // --- ViewModel ---
 class HomeViewModel(
     apiKey: String,
@@ -54,6 +66,9 @@ class HomeViewModel(
 
     private val _loggedInUser = MutableStateFlow<Usuario?>(null)
     val loggedInUser: StateFlow<Usuario?> = _loggedInUser.asStateFlow()
+
+    private val _reportUiState = MutableStateFlow(ReportUiState())
+    val reportUiState: StateFlow<ReportUiState> = _reportUiState.asStateFlow()
 
     init {
         cargarCargos()
@@ -177,5 +192,74 @@ class HomeViewModel(
 
     fun resetLoginState() {
         _loginUiState.value = LoginUiState()
+    }
+
+    // --- Reports Screen ---
+    private fun limitMapData(data: Map<String, Int>, limit: Int = 19): Map<String, Int> {
+        if (data.size <= limit + 1) return data
+
+        val sortedData = data.toList().sortedByDescending { it.second }
+        val mainData = sortedData.take(limit)
+        val otherData = sortedData.drop(limit)
+        val otherSum = otherData.sumOf { it.second }
+
+        return mainData.toMap() + ("Otros" to otherSum)
+    }
+
+    private fun limitPairData(data: List<Pair<String, Int>>, limit: Int = 19): List<Pair<String, Int>> {
+        if (data.size <= limit + 1) return data
+
+        val mainData = data.take(limit)
+        val otherData = data.drop(limit)
+        val otherSum = otherData.sumOf { it.second }
+
+        return mainData + ("Otros" to otherSum)
+    }
+
+    fun loadReportData() {
+        viewModelScope.launch {
+            _reportUiState.update { it.copy(isLoading = true) }
+            try {
+                val allPostulantesDeferred = async(Dispatchers.IO) { _cargos.value.flatMap { repository.getPostulantes(it.id) } }
+                val allVotosDeferred = async(Dispatchers.IO) { _cargos.value.flatMap { repository.getVotosForCargo(it.id) } }
+
+                val allPostulantes = allPostulantesDeferred.await()
+                val allVotos = allVotosDeferred.await()
+
+                val postulantesMap = allPostulantes.associateBy { it.id }
+                val votosMap = allVotos.associate { it.postulanteId to it.votos }
+
+                val votosPorGrupo = allPostulantes.groupBy { it.grupo }
+                    .mapValues { (_, postulantes) -> postulantes.sumOf { votosMap[it.id] ?: 0 } }
+
+                val votosPorGenero = allPostulantes.groupBy { it.genero }
+                    .mapValues { (_, postulantes) -> postulantes.sumOf { votosMap[it.id] ?: 0 } }
+
+                val participacionPorCargo = _cargos.value
+                    .map { it.cargo to (it.votosEmitidos ?: 0) }
+                    .sortedByDescending { it.second }
+
+                val postulantesPorCargo = allPostulantes.groupBy { it.cargoId }
+                    .mapKeys { (cargoId, _) -> _cargos.value.find { it.id == cargoId }?.cargo ?: "Desconocido" }
+                    .map { it.key to it.value.size }
+                    .sortedByDescending { it.second }
+
+                _reportUiState.update {
+                    it.copy(
+                        isLoading = false,
+                        chartData = ReportChartData(
+                            votosPorGrupo = limitMapData(votosPorGrupo),
+                            votosPorGenero = limitMapData(votosPorGenero),
+                            participacionPorCargo = limitPairData(participacionPorCargo),
+                            postulantesPorCargo = limitPairData(postulantesPorCargo)
+                        )
+                    )
+                }
+
+            } catch (e: Exception) {
+                println("❌ Error loading report data: ${e.message}")
+                _reportUiState.update { it.copy(isLoading = false) }
+            }
+        }
     }
 }
