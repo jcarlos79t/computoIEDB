@@ -89,26 +89,30 @@ fun ReportScreen(viewModel: HomeViewModel, onNavigateBack: () -> Unit) {
                 }
                 item {
                     CustomPieChartCard(
-                        title = "Votos por Grupo",
-                        data = uiState.chartData.votosPorGrupo
+                        title = "Sociedad con mayor cantidad de cargos electos",
+                        data = uiState.chartData.ganadoresPorGrupo,
+                        dataLabel = "Candidatos"
                     )
                 }
                 item {
                     CustomPieChartCard(
-                        title = "Votos por Género",
-                        data = uiState.chartData.votosPorGenero
+                        title = "Género con mayor cantidad de cargos electos",
+                        data = uiState.chartData.ganadoresPorGenero,
+                        dataLabel = "Candidatos"
                     )
                 }
                 item {
                     CustomBarChartCard(
-                        title = "Participación por Cargo",
-                        data = uiState.chartData.participacionPorCargo
+                        title = "Participación de votantes por cargo electo",
+                        data = uiState.chartData.participacionPorCargo,
+                        dataLabel = "Votos"
                     )
                 }
                 item {
                     CustomBarChartCard(
-                        title = "Postulantes por Cargo",
-                        data = uiState.chartData.postulantesPorCargo
+                        title = "Número de candidatos por cargo",
+                        data = uiState.chartData.postulantesPorCargo,
+                        dataLabel = "Candidatos"
                     )
                 }
             }
@@ -199,7 +203,7 @@ fun ElectionTitle() {
 }
 
 @Composable
-private fun CustomPieChartCard(title: String, data: Map<String, Int>) {
+private fun CustomPieChartCard(title: String, data: Map<String, Int>, dataLabel: String) {
     val total = data.values.sum().toFloat()
     if (total == 0f) return
 
@@ -216,7 +220,7 @@ private fun CustomPieChartCard(title: String, data: Map<String, Int>) {
     val colors = remember { generateColors(data.size) }
     val slices = data.entries.mapIndexed { index, entry ->
         val percentage = (entry.value / total)
-        Slice(entry.key, percentage, colors[index])
+        Slice(entry.key, percentage, colors[index], entry.value)
     }
 
     Card(
@@ -258,14 +262,14 @@ private fun CustomPieChartCard(title: String, data: Map<String, Int>) {
                         }
                     }
                 }
-                Legend(slices = slices)
+                Legend(slices = slices, dataLabel = dataLabel)
             }
         }
     }
 }
 
 @Composable
-private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>) {
+private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dataLabel: String) {
     if (data.isEmpty()) return
 
     val maxValue = data.maxOfOrNull { it.second }?.toFloat() ?: 0f
@@ -300,7 +304,7 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>) {
                         verticalArrangement = Arrangement.Bottom,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(pair.second.toString(), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text("${pair.second} $dataLabel", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(4.dp))
                         Box(
                             modifier = Modifier
@@ -324,18 +328,14 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>) {
 }
 
 @Composable
-private fun Legend(slices: List<Slice>) {
+private fun Legend(slices: List<Slice>, dataLabel: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         slices.forEach { slice ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(modifier = Modifier.size(12.dp).background(slice.color, CircleShape))
                 Spacer(Modifier.width(8.dp))
-                val animatedPercentage by animateFloatAsState(
-                    targetValue = slice.percentage * 100,
-                    animationSpec = tween(1000, 400)
-                )
                 Text(
-                    text = "${slice.label} (${animatedPercentage.toInt()}%)",
+                    text = "${slice.label} (${slice.value} $dataLabel)",
                     fontSize = 12.sp
                 )
             }
@@ -343,7 +343,7 @@ private fun Legend(slices: List<Slice>) {
     }
 }
 
-private data class Slice(val label: String, val percentage: Float, val color: Color)
+private data class Slice(val label: String, val percentage: Float, val color: Color, val value: Int)
 
 private fun generateColors(count: Int): List<Color> {
     val baseColors = listOf(

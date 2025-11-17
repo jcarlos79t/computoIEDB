@@ -36,8 +36,8 @@ data class LoginUiState(
 )
 
 data class ReportChartData(
-    val votosPorGrupo: Map<String, Int> = emptyMap(),
-    val votosPorGenero: Map<String, Int> = emptyMap(),
+    val ganadoresPorGrupo: Map<String, Int> = emptyMap(),
+    val ganadoresPorGenero: Map<String, Int> = emptyMap(),
     val participacionPorCargo: List<Pair<String, Int>> = emptyList(),
     val postulantesPorCargo: List<Pair<String, Int>> = emptyList()
 )
@@ -220,27 +220,37 @@ class HomeViewModel(
         viewModelScope.launch {
             _reportUiState.update { it.copy(isLoading = true) }
             try {
-                val allPostulantesDeferred = async(Dispatchers.IO) { _cargos.value.flatMap { repository.getPostulantes(it.id) } }
-                val allVotosDeferred = async(Dispatchers.IO) { _cargos.value.flatMap { repository.getVotosForCargo(it.id) } }
+                val allCargos = _cargos.value
+                val allPostulantesDeferred = async(Dispatchers.IO) { allCargos.flatMap { repository.getPostulantes(it.id) } }
+                val allVotosDeferred = async(Dispatchers.IO) { allCargos.flatMap { repository.getVotosForCargo(it.id) } }
 
                 val allPostulantes = allPostulantesDeferred.await()
                 val allVotos = allVotosDeferred.await()
-
-                val postulantesMap = allPostulantes.associateBy { it.id }
                 val votosMap = allVotos.associate { it.postulanteId to it.votos }
 
-                val votosPorGrupo = allPostulantes.groupBy { it.grupo }
-                    .mapValues { (_, postulantes) -> postulantes.sumOf { votosMap[it.id] ?: 0 } }
+                // --- Find Winners ---
+                val finishedCargos = allCargos.filter { it.estado == "FINALIZADO" }
+                val postulantesByCargoId = allPostulantes.groupBy { it.cargoId }
+                val winners = finishedCargos.mapNotNull { cargo ->
+                    postulantesByCargoId[cargo.id]?.maxByOrNull { postulante ->
+                        votosMap[postulante.id] ?: 0
+                    }
+                }
 
-                val votosPorGenero = allPostulantes.groupBy { it.genero }
-                    .mapValues { (_, postulantes) -> postulantes.sumOf { votosMap[it.id] ?: 0 } }
+                // 1. Ganadores por Grupo
+                val ganadoresPorGrupo = winners.groupBy { it.grupo }.mapValues { it.value.size }
 
-                val participacionPorCargo = _cargos.value
+                // 2. Ganadores por Género
+                val ganadoresPorGenero = winners.groupBy { it.genero }.mapValues { it.value.size }
+
+                // 3. Participación por Cargo (votos emitidos por cargo)
+                val participacionPorCargo = allCargos
                     .map { it.cargo to (it.votosEmitidos ?: 0) }
                     .sortedByDescending { it.second }
 
+                // 4. Postulantes por Cargo (número de candidatos por cargo)
                 val postulantesPorCargo = allPostulantes.groupBy { it.cargoId }
-                    .mapKeys { (cargoId, _) -> _cargos.value.find { it.id == cargoId }?.cargo ?: "Desconocido" }
+                    .mapKeys { (cargoId, _) -> allCargos.find { it.id == cargoId }?.cargo ?: "Desconocido" }
                     .map { it.key to it.value.size }
                     .sortedByDescending { it.second }
 
@@ -248,8 +258,8 @@ class HomeViewModel(
                     it.copy(
                         isLoading = false,
                         chartData = ReportChartData(
-                            votosPorGrupo = limitMapData(votosPorGrupo),
-                            votosPorGenero = limitMapData(votosPorGenero),
+                            ganadoresPorGrupo = limitMapData(ganadoresPorGrupo),
+                            ganadoresPorGenero = limitMapData(ganadoresPorGenero),
                             participacionPorCargo = limitPairData(participacionPorCargo),
                             postulantesPorCargo = limitPairData(postulantesPorCargo)
                         )
