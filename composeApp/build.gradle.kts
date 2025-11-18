@@ -105,6 +105,13 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.jct.iedbs1"
             packageVersion = "1.0.0"
+            modules("java.net.http")
+        }
+
+        buildTypes.release {
+            proguard {
+                isEnabled.set(false)
+            }
         }
     }
 }

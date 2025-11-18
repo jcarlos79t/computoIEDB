@@ -54,7 +54,9 @@ import androidx.compose.ui.unit.sp
 import org.jct.iedbs1.screens.home.HomeViewModel
 import org.jetbrains.compose.resources.Font
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Black
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Bold
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Medium
+import votacion_iedbs1.composeapp.generated.resources.Montserrat_Regular
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_SemiBold
 import votacion_iedbs1.composeapp.generated.resources.Res
 import kotlin.random.Random
@@ -105,14 +107,17 @@ fun ReportScreen(viewModel: HomeViewModel, onNavigateBack: () -> Unit) {
                     CustomBarChartCard(
                         title = "Participación de votantes por cargo electo",
                         data = uiState.chartData.participacionPorCargo,
-                        dataLabel = "Votos"
+                        //dataLabel = "Votos"
+                          dataLabel = ""
                     )
                 }
                 item {
                     CustomBarChartCard(
                         title = "Número de candidatos por cargo",
                         data = uiState.chartData.postulantesPorCargo,
-                        dataLabel = "Candidatos"
+                        //dataLabel = "Candidatos",
+                        dataLabel = ""
+
                     )
                 }
             }
@@ -225,10 +230,17 @@ private fun CustomPieChartCard(title: String, data: Map<String, Int>, dataLabel:
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text(title,
+                //style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
+                fontFamily = FontFamily( Font( Res.font.Montserrat_Bold)),
+                fontSize = 20.sp,
+            )
             Spacer(Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -284,10 +296,16 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dat
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text(title,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
+                fontFamily = FontFamily( Font( Res.font.Montserrat_Bold)),
+                fontSize = 20.sp
+            )
             Spacer(Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth().height(200.dp),

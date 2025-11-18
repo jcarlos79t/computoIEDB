@@ -76,11 +76,11 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
             Spacer(Modifier.height(16.dp))
 
             InfoCard {
-                InfoRow(icon = Icons.Default.VerifiedUser, title = "Versión de la App", subtitle = "1.0.0")
+                InfoRow(icon = Icons.Default.VerifiedUser, title = "Versión de la App", subtitle = "1.0.0 RC")
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                InfoRow(icon = Icons.Default.People, title = "Autor", subtitle = "J.C.T")
+                InfoRow(icon = Icons.Default.People, title = "Autor", subtitle = "J.C.T.A")
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                InfoRow(icon = Icons.Default.Info, title = "Área Encargada", subtitle = "Dep. Sistemas ©2025 Area AudioVisual")
+                InfoRow(icon = Icons.Default.Info, title = "Desarrollada por", subtitle = "Dep. Sistemas ©2025 Area AudioVisual")
             }
         }
     }
@@ -144,7 +144,7 @@ fun ElectionTitle() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "ELECCIONES 2026-2027",
+                text = "SISTEMA DE COMPUTO - ELECCIONES 2026-2027",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
@@ -158,12 +158,12 @@ fun ElectionTitle() {
                 lineHeight = 12.sp,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
             )
-            Text(
+            /*Text(
                 text = "Dep. Sistemas ©2025 Area AudioVisual",
                 fontSize = 9.sp,
                 textAlign = TextAlign.Center,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
-            )
+            )*/
         }
     }
 }

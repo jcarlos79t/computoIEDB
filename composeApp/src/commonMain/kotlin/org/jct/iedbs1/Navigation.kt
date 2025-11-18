@@ -1,14 +1,17 @@
 package org.jct.iedbs1
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -18,7 +21,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -65,10 +70,16 @@ fun AppNavigation(apikey: String, bearerToken: String) {
     Scaffold(
         bottomBar = {
             if (shouldShowBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    modifier = Modifier
+                        .height(95.dp)
+                        .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)),
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+
+                ) {
                     items.forEach { screen ->
                         NavigationBarItem(
-                            icon = { Icon(screen.icon, contentDescription = screen.label) },
+                            icon = { Icon(screen.icon, contentDescription = screen.label, modifier = Modifier.size(17.dp)) },
                             label = { Text(screen.label) },
                             selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                             onClick = {
@@ -88,9 +99,9 @@ fun AppNavigation(apikey: String, bearerToken: String) {
                     NavigationBarItem(
                         icon = {
                             if (isUserLoggedIn) {
-                                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Salir")
+                                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Salir", modifier = Modifier.size(17.dp))
                             } else {
-                                Icon(Icons.AutoMirrored.Filled.Login, contentDescription = "Login")
+                                Icon(Icons.AutoMirrored.Filled.Login, contentDescription = "Login", modifier = Modifier.size(17.dp))
                             }
                         },
                         label = { Text(if (isUserLoggedIn) "Salir" else "Login") },
@@ -107,7 +118,11 @@ fun AppNavigation(apikey: String, bearerToken: String) {
             }
         }
     ) { innerPadding ->
-        NavHost(navController = navController, startDestination = Screen.Home.route, modifier = Modifier.padding(innerPadding)) {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
             composable(Screen.Home.route) {
                 HomeRoute(
                     homeViewModel = homeViewModel,
