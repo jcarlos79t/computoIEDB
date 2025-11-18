@@ -49,6 +49,7 @@ import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
 import org.jct.iedbs1.models.toColor
 import org.jct.iedbs1.screens.home.HomeViewModel
+import org.jct.iedbs1.ui.theme.AppDimens
 
 
 @Composable
@@ -167,7 +168,7 @@ fun VotosHeader(
                     text = "REGISTRAR VOTOS",
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = AppDimens.title
                 )
             },
             navigationIcon = {
@@ -205,13 +206,13 @@ fun TotalVotosHeader(totalVotos: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("Total votos:", fontSize = 20.sp)
+        Text("Total votos:", fontSize = AppDimens.headline)
         Spacer(Modifier.width(8.dp))
-        Text(totalVotos.toString(), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text(totalVotos.toString(), fontSize = AppDimens.headline, fontWeight = FontWeight.Bold)
         Spacer(Modifier.width(16.dp))
-        Text("|", fontSize = 20.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+        Text("|", fontSize = AppDimens.headline, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
         Spacer(Modifier.width(16.dp))
-        Text("100%", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text("100%", fontSize = AppDimens.headline, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -237,7 +238,7 @@ fun VotoPostulanteCard(
                     text = "${porcentaje.toInt()}%",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize = AppDimens.display
                 )
             }
             Spacer(Modifier.width(12.dp))
@@ -255,11 +256,11 @@ fun VotoPostulanteCard(
         Text(
             text = "${postulante.nombre} ${postulante.apellidos}".uppercase(),
             fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
+            fontSize = AppDimens.card_title
         )
         Text(
             text = postulante.grupo,
-            fontSize = 14.sp,
+            fontSize = AppDimens.subtitle,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
     }

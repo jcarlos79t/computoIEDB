@@ -108,7 +108,7 @@ private fun StyledHeader(title: String, onNavigateBack: () -> Unit) {
                     text = title,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = AppDimens.body,
+                    fontSize = AppDimens.title,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
                 )
             },
@@ -146,14 +146,14 @@ fun ElectionTitle() {
             Text(
                 text = "SISTEMA DE COMPUTO - ELECCIONES 2026-2027",
                 fontWeight = FontWeight.Bold,
-                fontSize = AppDimens.body,
+                fontSize = AppDimens.title,
                 textAlign = TextAlign.Center,
                 lineHeight = AppDimens.headline,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
             )
             Text(
                 text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                fontSize = AppDimens.tiny,
+                fontSize = AppDimens.subtitle,
                 textAlign = TextAlign.Center,
                 lineHeight = AppDimens.caption,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
@@ -182,8 +182,8 @@ private fun InfoRow(icon: ImageVector, title: String, subtitle: String) {
     ) {
         Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
         Column {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = AppDimens.body)
-            Text(subtitle, fontSize = AppDimens.label, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(title, fontWeight = FontWeight.Bold, fontSize = AppDimens.label)
+            Text(subtitle, fontSize = AppDimens.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

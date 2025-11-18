@@ -205,7 +205,7 @@ fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
                         text = "ELECCIONES 2026-2027",
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 16.sp,
+                        fontSize = AppDimens.title,
                         textAlign = TextAlign.Center,
                         lineHeight = 5.sp,
                         fontFamily = FontFamily( Font( Res.font.Montserrat_Black))
@@ -213,15 +213,15 @@ fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
                     Text(
                         text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                        fontSize = 10.sp,
+                        fontSize = AppDimens.subtitle,
                         textAlign = TextAlign.Center,
-                        lineHeight = 10.sp,
+                        lineHeight = 1.sp,
                         fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
                     )
                     Text(
                         text = "Dep. Sistemas ©2025 Area AudioVisual",
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                        fontSize = 9.sp,
+                        fontSize = AppDimens.tiny,
                         textAlign = TextAlign.Center,
                         fontFamily = FontFamily( Font( Res.font.Montserrat_Medium))
                     )
@@ -280,7 +280,7 @@ fun CargoCard(
             ) {
                 Text(text = Utils.formatFecha(cargo.fecha).uppercase(),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    fontSize = AppDimens.headline,
+                    fontSize = AppDimens.card_body,
                     fontFamily = FontFamily( Font( Res.font.Montserrat_Regular))
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -294,7 +294,7 @@ fun CargoCard(
                         cargo.estado.uppercase(),
                         color = Utils.getColorEstado(cargo.estado),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
+                        fontSize = AppDimens.card_body,
                         fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
                     )
                 }
@@ -304,7 +304,7 @@ fun CargoCard(
             Text(
                 cargo.cargo.uppercase(),
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = AppDimens.headline,
+                fontSize = AppDimens.card_title,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily( Font( Res.font.Montserrat_Bold))
             )
@@ -313,7 +313,7 @@ fun CargoCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("🥇 GANADOR  $it",
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    fontSize = 13.sp,
+                    fontSize = AppDimens.card_subtitle,
                     fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
                 )
             }

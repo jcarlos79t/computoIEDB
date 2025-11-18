@@ -55,6 +55,7 @@ import org.jct.iedbs1.models.Cargo
 import org.jct.iedbs1.models.Postulante
 import org.jct.iedbs1.models.toColor
 import org.jct.iedbs1.screens.home.HomeViewModel
+import org.jct.iedbs1.ui.theme.AppDimens
 import org.jetbrains.compose.resources.Font
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Black
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Bold
@@ -151,7 +152,7 @@ fun DetailHeader(title: String, onNavigateBack: () -> Unit, onSync: () -> Unit) 
                     text = title,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = AppDimens.title,
                     fontFamily = FontFamily( Font( Res.font.Montserrat_Black))
                 )
             },
@@ -208,21 +209,21 @@ fun TotalVotosHeader(totalVotos: Int) {
                 Text(
                     text = "ELECCIONES 2026-2027",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = AppDimens.title,
                     textAlign = TextAlign.Center,
                     lineHeight = 5.sp,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
                 )
                 Text(
                     text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                    fontSize = 10.sp,
+                    fontSize = AppDimens.subtitle,
                     textAlign = TextAlign.Center,
                     lineHeight = 10.sp,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
                 )
                 Text(
                     text = "Dep. Sistemas ©2025 Area AudioVisual",
-                    fontSize = 9.sp,
+                    fontSize = AppDimens.tiny,
                     textAlign = TextAlign.Center,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
                 )
@@ -238,26 +239,26 @@ fun TotalVotosHeader(totalVotos: Int) {
             Row {
                 Text(
                     "Total votos:",
-                    fontSize = 20.sp,
+                    fontSize = AppDimens.headline,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     animatedTotalVotos.toString(),
-                    fontSize = 20.sp,
+                    fontSize = AppDimens.headline,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(
                     "|",
-                    fontSize = 20.sp,
+                    fontSize = AppDimens.headline,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(
                     "100%",
-                    fontSize = 20.sp,
+                    fontSize = AppDimens.headline,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Bold))
                 )
@@ -322,14 +323,14 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
                         text = animatedVotos.toString(),
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp,
+                        fontSize = AppDimens.display,
                         fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
                     )
                     Text(
                         text = "${animatedPercentage.toInt()}%",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 27.sp,
+                        fontSize = AppDimens.display,
                         fontFamily = FontFamily(Font(Res.font.Montserrat_Bold))
                     )
                 }
@@ -346,13 +347,13 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
                 Text(
                     text = "${postulante.nombre} ${postulante.apellidos}",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                    fontSize = AppDimens.card_title,
                     modifier = Modifier.padding(start = 4.dp),
                     fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
                 )
                 Text(
                     text = postulante.grupo,
-                    fontSize = 17.sp,
+                    fontSize = AppDimens.card_subtitle,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     modifier = Modifier.padding(start = 4.dp),
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))

@@ -89,30 +89,33 @@ fun ReportScreen(viewModel: HomeViewModel, onNavigateBack: () -> Unit) {
                 }
                 item {
                     CustomPieChartCard(
-                        title = "Ganadores por Grupo",
+                        title = "Sociedad con mayor cantidad de cargos electos",
                         data = uiState.chartData.ganadoresPorGrupo,
-                        dataLabel = "Ganadores"
+                        dataLabel = "Candidatos"
                     )
                 }
                 item {
                     CustomPieChartCard(
-                        title = "Ganadores por Género",
+                        title = "Género con mayor cantidad de cargos electos",
                         data = uiState.chartData.ganadoresPorGenero,
-                        dataLabel = "Ganadores"
-                    )
-                }
-                item {
-                    CustomBarChartCard(
-                        title = "Participación por Cargo",
-                        data = uiState.chartData.participacionPorCargo,
-                        dataLabel = "Votos"
-                    )
-                }
-                item {
-                    CustomBarChartCard(
-                        title = "Postulantes por Cargo",
-                        data = uiState.chartData.postulantesPorCargo,
                         dataLabel = "Candidatos"
+                    )
+                }
+                item {
+                    CustomBarChartCard(
+                        title = "Participación de votantes por cargo electo",
+                        data = uiState.chartData.participacionPorCargo,
+                        //dataLabel = "Votos"
+                          dataLabel = ""
+                    )
+                }
+                item {
+                    CustomBarChartCard(
+                        title = "Número de candidatos por cargo",
+                        data = uiState.chartData.postulantesPorCargo,
+                        //dataLabel = "Candidatos",
+                        dataLabel = ""
+
                     )
                 }
             }
@@ -142,7 +145,7 @@ private fun StyledHeader(title: String, onNavigateBack: () -> Unit) {
                     text = title,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = AppDimens.body,
+                    fontSize = AppDimens.title,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
                 )
             },
@@ -180,14 +183,14 @@ fun ElectionTitle() {
             Text(
                 text = "ELECCIONES 2026-2027",
                 fontWeight = FontWeight.Bold,
-                fontSize = AppDimens.body,
+                fontSize = AppDimens.title,
                 textAlign = TextAlign.Center,
                 lineHeight = AppDimens.headline,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
             )
             Text(
                 text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                fontSize = AppDimens.tiny,
+                fontSize = AppDimens.subtitle,
                 textAlign = TextAlign.Center,
                 lineHeight = AppDimens.caption,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
@@ -228,7 +231,7 @@ private fun CustomPieChartCard(title: String, data: Map<String, Int>, dataLabel:
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.display)
+            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.headline)
             Spacer(Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -287,7 +290,7 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dat
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.display)
+            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.headline)
             Spacer(Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth().height(200.dp),

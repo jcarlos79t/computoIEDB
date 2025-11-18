@@ -214,7 +214,7 @@ fun NuevoCargoHeader(onSaveClick: () -> Unit, onNavigateBack: () -> Unit) {
                     text = "NUEVO CARGO",
                     color = colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = AppDimens.headline
+                    fontSize = AppDimens.title
                 )
             },
             navigationIcon = {
@@ -267,14 +267,14 @@ fun PostulanteCard(postulante: Postulante, onDelete: () -> Unit) {
                     Text(
                         text = "${postulante.nombre} ${postulante.apellidos}",
                         fontWeight = FontWeight.Bold,
-                        fontSize = AppDimens.headline,
+                        fontSize = AppDimens.card_title,
                         color = colorScheme.onSurface,
                         fontFamily = FontFamily(Font(Res.font.Montserrat_Bold))
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = postulante.grupo,
-                        fontSize = AppDimens.label,
+                        fontSize = AppDimens.card_subtitle,
                         color = colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     )
                 }
@@ -311,7 +311,7 @@ fun NuevoPostulanteDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("NUEVO POSTULANTE", style = typography.titleLarge, fontSize = AppDimens.display)
+                Text("NUEVO POSTULANTE", style = typography.titleLarge, fontSize = AppDimens.headline)
                 Spacer(Modifier.height(20.dp))
 
                 OutlinedTextFieldWithCounter(

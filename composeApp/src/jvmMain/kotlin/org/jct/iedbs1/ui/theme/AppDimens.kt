@@ -7,15 +7,15 @@ import androidx.compose.ui.unit.sp
  * We're making the fonts slightly larger for better readability on a monitor.
  */
 actual object AppDimens {
-    actual val title = (18 * 1.25).sp
-    actual val subtitle = (13 * 1.25).sp
-    actual val card_title = (16 * 1.25).sp
-    actual val card_subtitle = (14 * 1.25).sp
-    actual val card_body = (12 * 1.25).sp
-    actual val display = (24 * 1.25).sp
-    actual val headline = (18 * 1.25).sp
+    actual val title =40.sp
+    actual val subtitle = 30.sp
+    actual val card_title = 60.sp
+    actual val card_subtitle = 35.sp
+    actual val card_body = 27.sp
+    actual val display = 55.sp
+    actual val headline = 40.sp
     actual val body = (16 * 1.25).sp
-    actual val label = (14 * 1.25).sp
-    actual val caption = (12 * 1.25).sp
-    actual val tiny = (10 * 1.25).sp
+    actual val label = 30.sp
+    actual val caption = 25.sp
+    actual val tiny = 25.sp
 }
