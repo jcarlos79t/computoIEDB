@@ -40,6 +40,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -61,6 +63,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
@@ -72,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import org.jct.iedbs1.models.Postulante
 import org.jct.iedbs1.models.toColor
+import org.jct.iedbs1.ui.theme.AppDimens
 import org.jetbrains.compose.resources.Font
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Bold
 import votacion_iedbs1.composeapp.generated.resources.Res
@@ -83,8 +87,6 @@ fun NuevoCargoRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // This effect runs when the composable is disposed (i.e., when we navigate away).
-    // It's the perfect place to reset the state.
     DisposableEffect(Unit) {
         onDispose {
             viewModel.resetState()
@@ -93,7 +95,6 @@ fun NuevoCargoRoute(
 
     LaunchedEffect(uiState.saveSuccess) {
         if (uiState.saveSuccess) {
-            // Just navigate back. The DisposableEffect will handle the state reset.
             onNavigateBack()
         }
     }
@@ -124,16 +125,14 @@ fun NuevoCargoRoute(
 
     if (uiState.isSaving) {
         Dialog(onDismissRequest = {}) {
-            Card(
-                modifier = Modifier.padding(16.dp)
-            ) {
+            Card(modifier = Modifier.padding(16.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(16.dp)
                 ) {
                     CircularProgressIndicator()
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text("Guardando...")
+                    Text("Guardando...", fontSize = AppDimens.body)
                 }
             }
         }
@@ -152,16 +151,13 @@ fun NuevoCargoScreen(
 ) {
     Scaffold(
         topBar = {
-            NuevoCargoHeader(
-                onSaveClick = onSave,
-                onNavigateBack = onNavigateBack
-            )
+            NuevoCargoHeader(onSaveClick = onSave, onNavigateBack = onNavigateBack)
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onShowDialog,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = colorScheme.primary,
+                contentColor = colorScheme.onPrimary
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar Postulante")
             }
@@ -182,29 +178,19 @@ fun NuevoCargoScreen(
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true
             )
-
             Spacer(Modifier.height(24.dp))
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Postulantes", style = MaterialTheme.typography.titleLarge)
+                Text("Postulantes", style = typography.titleLarge, fontSize = AppDimens.display)
                 HorizontalDivider(modifier = Modifier.weight(1f).padding(start = 8.dp))
             }
-
-
             Spacer(Modifier.height(16.dp))
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(uiState.postulantes, key = { it.id }) { postulante ->
-                    PostulanteCard(
-                        postulante = postulante,
-                        onDelete = { onRemovePostulante(postulante) }
-                    )
+                    PostulanteCard(postulante = postulante, onDelete = { onRemovePostulante(postulante) })
                 }
             }
         }
@@ -213,20 +199,12 @@ fun NuevoCargoScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NuevoCargoHeader(
-    onSaveClick: () -> Unit,
-    onNavigateBack: () -> Unit
-) {
+fun NuevoCargoHeader(onSaveClick: () -> Unit, onNavigateBack: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(
-                RoundedCornerShape(
-                    bottomStart = 24.dp,
-                    bottomEnd = 24.dp
-                )
-            ),
-        color = MaterialTheme.colorScheme.primary,
+            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
+        color = colorScheme.primary,
         shadowElevation = 8.dp,
         tonalElevation = 3.dp
     ) {
@@ -234,9 +212,9 @@ fun NuevoCargoHeader(
             title = {
                 Text(
                     text = "NUEVO CARGO",
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = AppDimens.headline
                 )
             },
             navigationIcon = {
@@ -244,7 +222,7 @@ fun NuevoCargoHeader(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Atrás",
-                        tint = MaterialTheme.colorScheme.onPrimary,
+                        tint = colorScheme.onPrimary,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -254,14 +232,12 @@ fun NuevoCargoHeader(
                     Icon(
                         imageVector = Icons.Default.Save,
                         contentDescription = "Guardar",
-                        tint = MaterialTheme.colorScheme.onPrimary,
+                        tint = colorScheme.onPrimary,
                         modifier = Modifier.size(26.dp)
                     )
                 }
             },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent // usamos el color del Surface
-            )
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Transparent)
         )
     }
 }
@@ -271,13 +247,13 @@ fun PostulanteCard(postulante: Postulante, onDelete: () -> Unit) {
     val color = postulante.color.toColor()
     val gradient = Brush.horizontalGradient(
         colors = listOf(color.copy(alpha = 0.0f), color.copy(alpha = 0.5f), color),
-        startX = 450f,
+        startX = 450f
     )
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        colors = CardDefaults.cardColors(containerColor = colorScheme.primaryContainer)
     ) {
         Box {
             Row(
@@ -291,22 +267,22 @@ fun PostulanteCard(postulante: Postulante, onDelete: () -> Unit) {
                     Text(
                         text = "${postulante.nombre} ${postulante.apellidos}",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontFamily = FontFamily( Font( Res.font.Montserrat_Bold))
+                        fontSize = AppDimens.headline,
+                        color = colorScheme.onSurface,
+                        fontFamily = FontFamily(Font(Res.font.Montserrat_Bold))
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = postulante.grupo,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        fontSize = AppDimens.label,
+                        color = colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     )
                 }
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Eliminar",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        tint = colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -330,14 +306,12 @@ fun NuevoPostulanteDialog(
     val focusManager = LocalFocusManager.current
 
     Dialog(onDismissRequest = onDismiss) {
-        Card(
-            shape = RoundedCornerShape(16.dp),
-        ) {
+        Card(shape = RoundedCornerShape(16.dp)) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("NUEVO POSTULANTE", style = MaterialTheme.typography.titleLarge)
+                Text("NUEVO POSTULANTE", style = typography.titleLarge, fontSize = AppDimens.display)
                 Spacer(Modifier.height(20.dp))
 
                 OutlinedTextFieldWithCounter(
@@ -392,48 +366,32 @@ fun NuevoPostulanteDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("SELECCIONE EL COLOR")
+                    Text("SELECCIONE EL COLOR", fontSize = AppDimens.body)
                     Box(Modifier.size(50.dp).background(uiState.dialogColor, CircleShape))
                 }
 
-                ColorPicker(
-                    selectedColor = uiState.dialogColor,
-                    onColorSelected = onColorChange
-                )
+                ColorPicker(selectedColor = uiState.dialogColor, onColorSelected = onColorChange)
                 Spacer(Modifier.height(16.dp))
 
-                Dropdown(
-                    label = "SOCIEDAD",
-                    options = grupos,
-                    selected = uiState.dialogGrupo,
-                    onSelected = onGrupoChange
-                )
+                Dropdown(label = "SOCIEDAD", options = grupos, selected = uiState.dialogGrupo, onSelected = onGrupoChange)
                 Spacer(Modifier.height(16.dp))
-                Dropdown(
-                    label = "GENERO",
-                    options = generos,
-                    selected = uiState.dialogGenero,
-                    onSelected = onGeneroChange
-                )
+                Dropdown(label = "GENERO", options = generos, selected = uiState.dialogGenero, onSelected = onGeneroChange)
 
                 Spacer(Modifier.height(24.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) {
-                        Text("CANCELAR")
+                        Text("CANCELAR", fontSize = AppDimens.body)
                     }
                     Spacer(Modifier.width(8.dp))
                     Button(
                         onClick = onAddPostulante,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            containerColor = colorScheme.primary,
+                            contentColor = colorScheme.onPrimary
                         )
                     ) {
-                        Text("AGREGAR")
+                        Text("AGREGAR", fontSize = AppDimens.body)
                     }
                 }
             }
@@ -526,12 +484,7 @@ fun ColorPicker(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Dropdown(
-    label: String,
-    options: List<String>,
-    selected: String,
-    onSelected: (String) -> Unit
-) {
+fun Dropdown(label: String, options: List<String>, selected: String, onSelected: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     Row(
@@ -539,39 +492,30 @@ fun Dropdown(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(label, style = MaterialTheme.typography.bodyLarge)
+        Text(label, style = typography.bodyLarge, fontSize = AppDimens.body)
 
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
             Button(
                 onClick = { expanded = true },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    containerColor = colorScheme.secondaryContainer,
+                    contentColor = colorScheme.onSecondaryContainer
                 )
             ) {
-                Text(selected.ifEmpty { "Seleccione" })
+                Text(selected.ifEmpty { "Seleccione" }, fontSize = AppDimens.body)
                 Icon(
                     imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
-                    contentDescription = "Desplegar menú", // Evita usar "null" en la descripción para accesibilidad
+                    contentDescription = "Desplegar menú",
                     modifier = Modifier.size(ButtonDefaults.IconSize),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    tint = colorScheme.onSecondaryContainer
                 )
             }
 
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
+            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 options.forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            onSelected(option)
-                            expanded = false
-                        }
+                        text = { Text(option, fontSize = AppDimens.body) },
+                        onClick = { onSelected(option); expanded = false }
                     )
                 }
             }

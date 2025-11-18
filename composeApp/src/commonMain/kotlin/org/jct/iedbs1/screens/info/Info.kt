@@ -47,7 +47,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.jct.iedbs1.ui.theme.AppDimens
 import org.jetbrains.compose.resources.Font
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Black
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Medium
@@ -108,7 +108,7 @@ private fun StyledHeader(title: String, onNavigateBack: () -> Unit) {
                     text = title,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = AppDimens.body,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
                 )
             },
@@ -146,24 +146,18 @@ fun ElectionTitle() {
             Text(
                 text = "SISTEMA DE COMPUTO - ELECCIONES 2026-2027",
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontSize = AppDimens.body,
                 textAlign = TextAlign.Center,
-                lineHeight = 18.sp,
+                lineHeight = AppDimens.headline,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
             )
             Text(
                 text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                fontSize = 10.sp,
+                fontSize = AppDimens.tiny,
                 textAlign = TextAlign.Center,
-                lineHeight = 12.sp,
+                lineHeight = AppDimens.caption,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
             )
-            /*Text(
-                text = "Dep. Sistemas ©2025 Area AudioVisual",
-                fontSize = 9.sp,
-                textAlign = TextAlign.Center,
-                fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
-            )*/
         }
     }
 }
@@ -188,8 +182,8 @@ private fun InfoRow(icon: ImageVector, title: String, subtitle: String) {
     ) {
         Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
         Column {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(subtitle, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(title, fontWeight = FontWeight.Bold, fontSize = AppDimens.body)
+            Text(subtitle, fontSize = AppDimens.label, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

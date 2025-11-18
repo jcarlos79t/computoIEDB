@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jct.iedbs1.Utils
 import org.jct.iedbs1.models.Cargo
+import org.jct.iedbs1.ui.theme.AppDimens
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Black
@@ -155,66 +156,6 @@ fun HomeScreen(
     }
 }
 
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-        navigationIcon = {
-            IconButton(onClick = onNavigateToLogin) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Login",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .size(35.dp)
-                )
-            }
-        },
-        title = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "ELECCIONES 2026-2027",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 5.sp
-
-                )
-                Text(
-                    text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 10.sp
-                )
-                Text(
-                    text = "Dep. Sistemas ©2025 Area AudioVisual",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
-                    fontSize = 9.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
-        },
-        actions = {
-            Icon(
-                imageVector = Icons.Default.Sync,
-                contentDescription = "Sincronizar",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(end = 12.dp)
-                    .clickable { viewModel.cargarCargos() }
-            )
-        }
-    )
-}*/
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
@@ -238,24 +179,6 @@ fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
             ),
             navigationIcon = {
                 IconButton(onClick = onNavigateToLogin) {
-/*                   Icon(
-                        //imageVector = Icons.Default.Person,
-                        painter = painterResource(Res.drawable.logo_dove),
-                        contentDescription = "Login",
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .padding(start = 20.dp)
-                            .size(200.dp)
-                    )*/
-                   /* Image(
-                        painter = painterResource(Res.drawable.logo_dove),
-                        contentDescription = "Login",
-                        modifier = Modifier
-                            .padding(start = 20.dp)
-                            .size(40.dp),    // <-- ahora sí cambia
-                        contentScale = ContentScale.Crop
-                    )*/
-
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()          // <-- rompe el límite del navigationIcon
@@ -357,7 +280,7 @@ fun CargoCard(
             ) {
                 Text(text = Utils.formatFecha(cargo.fecha).uppercase(),
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    fontSize = 12.sp,
+                    fontSize = AppDimens.headline,
                     fontFamily = FontFamily( Font( Res.font.Montserrat_Regular))
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -381,7 +304,7 @@ fun CargoCard(
             Text(
                 cargo.cargo.uppercase(),
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 18.sp,
+                fontSize = AppDimens.headline,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily( Font( Res.font.Montserrat_Bold))
             )

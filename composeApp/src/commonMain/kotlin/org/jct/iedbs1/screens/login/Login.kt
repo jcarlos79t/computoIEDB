@@ -17,9 +17,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,8 +35,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.jct.iedbs1.screens.home.HomeViewModel
+import org.jct.iedbs1.ui.theme.AppDimens
 
 @Composable
 fun LoginRoute(
@@ -98,23 +96,20 @@ fun LoginScreen(
             Text(
                 text = "ELECCIONES 2026-2027",
                 fontWeight = FontWeight.Bold,
-               // color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 16.sp,
+                fontSize = AppDimens.body,
                 textAlign = TextAlign.Center,
-                lineHeight = 5.sp
+                lineHeight = AppDimens.label
 
             )
             Text(
                 text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                //color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 12.sp,
+                fontSize = AppDimens.caption,
                 textAlign = TextAlign.Center,
-                lineHeight = 10.sp
+                lineHeight = AppDimens.tiny
             )
             Text(
                 text = "Dep. Sistemas ©2025 Area AudioVisual",
-                //color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 9.sp,
+                fontSize = AppDimens.tiny,
                 textAlign = TextAlign.Center
             )
 
@@ -144,7 +139,7 @@ fun LoginScreen(
 
             if (uiState.loginError != null) {
                 Spacer(Modifier.height(16.dp))
-                Text(uiState.loginError, color = colorScheme.error)
+                Text(uiState.loginError, color = colorScheme.error, fontSize = AppDimens.label)
             }
 
             Spacer(Modifier.height(24.dp))
@@ -158,7 +153,7 @@ fun LoginScreen(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
                 ) {
-                    Text("Ingresar", style = typography.titleMedium)
+                    Text("Ingresar", fontSize = AppDimens.body)
                 }
             }
         }

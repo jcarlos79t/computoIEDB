@@ -50,13 +50,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.jct.iedbs1.screens.home.HomeViewModel
+import org.jct.iedbs1.ui.theme.AppDimens
 import org.jetbrains.compose.resources.Font
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Black
-import votacion_iedbs1.composeapp.generated.resources.Montserrat_Bold
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Medium
-import votacion_iedbs1.composeapp.generated.resources.Montserrat_Regular
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_SemiBold
 import votacion_iedbs1.composeapp.generated.resources.Res
 import kotlin.random.Random
@@ -91,33 +89,30 @@ fun ReportScreen(viewModel: HomeViewModel, onNavigateBack: () -> Unit) {
                 }
                 item {
                     CustomPieChartCard(
-                        title = "Sociedad con mayor cantidad de cargos electos",
+                        title = "Ganadores por Grupo",
                         data = uiState.chartData.ganadoresPorGrupo,
-                        dataLabel = "Candidatos"
+                        dataLabel = "Ganadores"
                     )
                 }
                 item {
                     CustomPieChartCard(
-                        title = "Género con mayor cantidad de cargos electos",
+                        title = "Ganadores por Género",
                         data = uiState.chartData.ganadoresPorGenero,
-                        dataLabel = "Candidatos"
+                        dataLabel = "Ganadores"
                     )
                 }
                 item {
                     CustomBarChartCard(
-                        title = "Participación de votantes por cargo electo",
+                        title = "Participación por Cargo",
                         data = uiState.chartData.participacionPorCargo,
-                        //dataLabel = "Votos"
-                          dataLabel = ""
+                        dataLabel = "Votos"
                     )
                 }
                 item {
                     CustomBarChartCard(
-                        title = "Número de candidatos por cargo",
+                        title = "Postulantes por Cargo",
                         data = uiState.chartData.postulantesPorCargo,
-                        //dataLabel = "Candidatos",
-                        dataLabel = ""
-
+                        dataLabel = "Candidatos"
                     )
                 }
             }
@@ -147,7 +142,7 @@ private fun StyledHeader(title: String, onNavigateBack: () -> Unit) {
                     text = title,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = AppDimens.body,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
                 )
             },
@@ -185,21 +180,21 @@ fun ElectionTitle() {
             Text(
                 text = "ELECCIONES 2026-2027",
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontSize = AppDimens.body,
                 textAlign = TextAlign.Center,
-                lineHeight = 18.sp,
+                lineHeight = AppDimens.headline,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
             )
             Text(
                 text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
-                fontSize = 10.sp,
+                fontSize = AppDimens.tiny,
                 textAlign = TextAlign.Center,
-                lineHeight = 12.sp,
+                lineHeight = AppDimens.caption,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
             )
             Text(
                 text = "Dep. Sistemas ©2025 Area AudioVisual",
-                fontSize = 9.sp,
+                fontSize = AppDimens.tiny,
                 textAlign = TextAlign.Center,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
             )
@@ -230,17 +225,10 @@ private fun CustomPieChartCard(title: String, data: Map<String, Int>, dataLabel:
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title,
-                //style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
-                fontFamily = FontFamily( Font( Res.font.Montserrat_Bold)),
-                fontSize = 20.sp,
-            )
+            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.display)
             Spacer(Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -296,16 +284,10 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dat
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f),
-                fontFamily = FontFamily( Font( Res.font.Montserrat_Bold)),
-                fontSize = 20.sp
-            )
+            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.display)
             Spacer(Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth().height(200.dp),
@@ -322,7 +304,7 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dat
                         verticalArrangement = Arrangement.Bottom,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("${pair.second} $dataLabel", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                        Text("${pair.second} $dataLabel", fontSize = AppDimens.caption, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(4.dp))
                         Box(
                             modifier = Modifier
@@ -333,10 +315,10 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dat
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = pair.first,
-                            fontSize = 10.sp,
+                            fontSize = AppDimens.tiny,
                             textAlign = TextAlign.Center,
                             maxLines = 2,
-                            lineHeight = 12.sp
+                            lineHeight = AppDimens.caption
                         )
                     }
                 }
@@ -354,7 +336,7 @@ private fun Legend(slices: List<Slice>, dataLabel: String) {
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "${slice.label} (${slice.value} $dataLabel)",
-                    fontSize = 12.sp
+                    fontSize = AppDimens.caption
                 )
             }
         }
@@ -373,7 +355,7 @@ private fun generateColors(count: Int): List<Color> {
     if (count <= baseColors.size) {
         return baseColors.take(count)
     }
-    val random = Random(123)
+    val random = Random(123) // Seed for consistent "random" colors
     return baseColors + (1..(count - baseColors.size)).map {
         Color(
             red = random.nextFloat(),
