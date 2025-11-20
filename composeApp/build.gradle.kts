@@ -104,13 +104,15 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             //packageName = "org.jct.iedbs1"
-            packageName = "iedb computo"
+            packageName = "iedb_computo"
             packageVersion = "1.0.0"
             modules("java.net.http")
 
             windows {
                 installationPath = "IEDB"
                 menuGroup = "IEDB"
+                perUserInstall = false
+                shortcut = true
             }
         }
 
