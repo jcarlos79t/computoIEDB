@@ -80,7 +80,7 @@ fun InfoScreen(onNavigateBack: () -> Unit) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 InfoRow(icon = Icons.Default.People, title = "Autor", subtitle = "J.C.T.A")
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                InfoRow(icon = Icons.Default.Info, title = "Desarrollada por", subtitle = "Dep. Sistemas ©2025 Area AudioVisual")
+                InfoRow(icon = Icons.Default.Info, title = "Desarrollado por", subtitle = "Dep. Sistemas ©2025 Area AudioVisual")
             }
         }
     }
