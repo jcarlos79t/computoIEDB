@@ -58,6 +58,9 @@ class HomeViewModel(
     private val _cargos = MutableStateFlow<List<Cargo>>(emptyList())
     val cargos: StateFlow<List<Cargo>> = _cargos.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private val _votosUiState = MutableStateFlow(VotosUiState())
     val votosUiState = _votosUiState.asStateFlow()
 
@@ -77,11 +80,14 @@ class HomeViewModel(
     // --- Home Screen ---
     fun cargarCargos() {
         viewModelScope.launch {
+            _isRefreshing.value = true
             try {
                 val result = withContext(Dispatchers.IO) { repository.getCargos() }
                 _cargos.value = result
             } catch (e: Exception) {
                 println("❌ Error cargando cargos: ${e.message}")
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

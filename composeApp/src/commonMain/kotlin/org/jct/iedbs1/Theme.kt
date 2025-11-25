@@ -13,7 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val lightColorScheme = lightColorScheme(
+/*val lightColorScheme = lightColorScheme(
     primary = Color(0xFFB71C1C),
     onPrimary = Color.White,
     primaryContainer = Color(0xFFFFCDD2),
@@ -24,6 +24,20 @@ val lightColorScheme = lightColorScheme(
     onBackground = Color(0xFF1C1B1F),
     surface = Color(0xFFFFFBFE),
     onSurface = Color(0xFF1C1B1F)
+)*/
+
+val lightColorScheme = lightColorScheme(
+    primary = Color(0xFFFA4520),
+    onPrimary = Color(0xFFFFF5EF),
+    primaryContainer = Color(0xFF333D47),
+    onPrimaryContainer = Color(0xFFFCFFFF),
+    tertiaryContainer = Color(0xFF20242E),
+    secondary = Color(0xFFC8C6C0),
+    onSecondary = Color(0xFF33302A),
+    background = Color(0xFF26292F),
+    onBackground = Color(0xFFE6E1E5),
+    surface = Color(0xFF333D47),
+    onSurface = Color(0xFFE6E1E5)
 )
 
 val darkColorScheme = darkColorScheme(

@@ -21,12 +21,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -39,6 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -67,7 +66,6 @@ import votacion_iedbs1.composeapp.generated.resources.Montserrat_Medium
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_Regular
 import votacion_iedbs1.composeapp.generated.resources.Montserrat_SemiBold
 import votacion_iedbs1.composeapp.generated.resources.Res
-import votacion_iedbs1.composeapp.generated.resources.app_icon
 import votacion_iedbs1.composeapp.generated.resources.logo_dove
 
 @Composable
@@ -80,6 +78,7 @@ fun HomeRoute(
 ) {
     val cargos by homeViewModel.cargos.collectAsState()
     val loggedInUser by homeViewModel.loggedInUser.collectAsState()
+    val isRefreshing by homeViewModel.isRefreshing.collectAsState()
 
     HomeScreen(
         cargos = cargos,
@@ -88,7 +87,9 @@ fun HomeRoute(
         onNavigateToVotos = onNavigateToVotos,
         onNavigateToDetail = onNavigateToDetail,
         onNavigateToLogin = onNavigateToLogin,
-        isUserLoggedIn = loggedInUser?.valido == true
+        isUserLoggedIn = loggedInUser?.valido == true,
+        isRefreshing = isRefreshing,
+        onRefresh = homeViewModel::cargarCargos
     )
 }
 
@@ -101,7 +102,9 @@ fun HomeScreen(
     onNavigateToVotos: (Cargo) -> Unit,
     onNavigateToDetail: (Cargo) -> Unit,
     onNavigateToLogin: () -> Unit,
-    isUserLoggedIn: Boolean
+    isUserLoggedIn: Boolean,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -122,33 +125,39 @@ fun HomeScreen(
         },
         floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
-        Column(
+
+        PullToRefreshBox(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+                .fillMaxSize(),
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh
         ) {
-            //SearchBar()
-
-            if (cargos.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(cargos) { cargo ->
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = if (cargos.isNotEmpty()) Arrangement.spacedBy(12.dp) else Arrangement.Top
+            ) {
+                if (cargos.isNotEmpty()) {
+                    items(cargos, key = { it.id }) { cargo ->
                         CargoCard(
                             cargo = cargo,
                             onNavigateToDetail = { onNavigateToDetail(cargo) },
                             onNavigateToVotos = { onNavigateToVotos(cargo) },
                             showAdminActions = isUserLoggedIn
                         )
+                    }
+                } else if (!isRefreshing) {
+                    item {
+                        Box(
+                            modifier = Modifier.fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No encontre informacion, o no estas conectado a internet.",
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }

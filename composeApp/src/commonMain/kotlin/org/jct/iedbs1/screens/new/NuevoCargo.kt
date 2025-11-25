@@ -450,10 +450,21 @@ fun ColorPicker(
     selectedColor: Color,
     onColorSelected: (Color) -> Unit
 ) {
-    //COLORES DEL PICKER
+    //COLORES CANDIDATOS DEL PICKER
     val colors = listOf(
-        Color(0xFFFF0000), Color(0xFFF4CA16), Color(0xFF00AD43),
-        Color(0xFF318CE7), Color(0xFFF07427), Color(0xFF9457EB)
+        Color(0xFFB30000), //ROJO
+        Color(0xFF009B00),  //VERDE OSCURO
+        Color(0xFF784036), //CAFE
+        Color(0xFFFF71B8), //ROSADO FUERTE
+        Color(0xFFF4F139), //AMARILLO MOSTAZA
+        Color(0xFF7DBEFF), //CELESTE
+        Color(0xFFA4FFA4),  //VERDE CLARO
+        Color(0xFFFFC1E0),  //ROSADO CLARO
+        Color(0xFFFB9A39),  //ANARANJADO
+        Color(0xFFC0C0C0),  //PLOMO
+        Color(0xFF0053A6),  //AZUL
+        Color(0xFFA87BFB),  //MORADO
+
     )
     Spacer(Modifier.height(8.dp))
     Row(
