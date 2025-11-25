@@ -229,7 +229,7 @@ fun VotoPostulanteCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(150.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(postulante.color.toColor()),
                 contentAlignment = Alignment.Center
