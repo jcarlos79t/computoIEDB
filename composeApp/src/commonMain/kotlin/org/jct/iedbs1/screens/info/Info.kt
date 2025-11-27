@@ -144,7 +144,7 @@ fun ElectionTitle() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "SISTEMA DE COMPUTO - ELECCIONES 2026-2027",
+                text = "SISTEMA DE COMPUTO - ELECCIONES DE LIDERES 2026-2027",
                 fontWeight = FontWeight.Bold,
                 fontSize = AppDimens.title,
                 textAlign = TextAlign.Center,

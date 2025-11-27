@@ -19,4 +19,5 @@ expect object AppDimens {
     val label: TextUnit
     val caption: TextUnit
     val tiny: TextUnit
+    val title_main: TextUnit
 }

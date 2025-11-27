@@ -94,7 +94,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "ELECCIONES 2026-2027",
+                text = "ELECCIONES DE LIDERES 2026-2027",
                 fontWeight = FontWeight.Bold,
                 fontSize = AppDimens.body,
                 textAlign = TextAlign.Center,

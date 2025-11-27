@@ -135,7 +135,7 @@ fun AppNavigation(apikey: String, bearerToken: String) {
                     onNavigateToDetail = {
                         navController.navigate("detail/${it.id}")
                     },
-                    onNavigateToLogin = { navController.navigate("login") } // This is still used by the header
+                    onNavigateToLogin = { /*navController.navigate("login")*/ } // This is still used by the header
                 )
             }
             composable(Screen.Reports.route) {

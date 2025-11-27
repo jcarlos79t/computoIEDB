@@ -6,18 +6,22 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -44,6 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -181,7 +187,7 @@ fun ElectionTitle() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "ELECCIONES 2026-2027",
+                text = "ELECCIONES DE LIDERES 2026-2027",
                 fontWeight = FontWeight.Bold,
                 fontSize = AppDimens.title,
                 textAlign = TextAlign.Center,
@@ -273,7 +279,7 @@ private fun CustomPieChartCard(title: String, data: Map<String, Int>, dataLabel:
 }
 
 @Composable
-private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dataLabel: String) {
+private fun CustomBarChartCardold(title: String, data: List<Pair<String, Int>>, dataLabel: String) {
     if (data.isEmpty()) return
 
     val maxValue = data.maxOfOrNull { it.second }?.toFloat() ?: 0f
@@ -331,6 +337,304 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dat
         }
     }
 }
+
+@Composable
+private fun CustomBarChartCard1(
+    title: String,
+    data: List<Pair<String, Int>>,
+    dataLabel: String
+) {
+    if (data.isEmpty()) return
+
+    val maxValue = data.maxOfOrNull { it.second }?.toFloat() ?: 0f
+    if (maxValue == 0f) return
+
+    var animationPlayed by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { animationPlayed = true }
+
+    val colors = remember { generateColors(data.size) }
+
+    val scrollState = rememberScrollState()
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                fontSize = AppDimens.headline
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Column {
+
+                // --- SCROLL HORIZONTAL DEL GRÁFICO ---
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(scrollState)
+                        .height(220.dp)
+                        .padding(bottom = 8.dp),
+                    verticalAlignment = Alignment.Bottom
+                ) {
+
+                    data.forEachIndexed { index, pair ->
+
+                        val animatedHeightFactor by animateFloatAsState(
+                            targetValue = if (animationPlayed) pair.second / maxValue else 0f,
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                delayMillis = 200 + index * 100
+                            )
+                        )
+
+                        Column(
+                            modifier = Modifier
+                                .width(70.dp)
+                                .padding(horizontal = 8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            // Valor
+                            Text(
+                                "${pair.second} $dataLabel",
+                                fontSize = AppDimens.caption,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Spacer(Modifier.height(4.dp))
+
+                            // Barra
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height((animatedHeightFactor * 150).dp)
+                                    .background(colors[index])
+                            )
+
+                            Spacer(Modifier.height(4.dp))
+
+                            // Etiqueta ROTADA (vertical)
+                            Box(
+                                modifier = Modifier.height(60.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = pair.first,
+                                    fontSize = AppDimens.tiny,
+                                    textAlign = TextAlign.Center,
+                                    maxLines = 2,
+                                    lineHeight = AppDimens.caption,
+                                    modifier = Modifier.rotate(-90f) // ← ROTACIÓN VERTICAL
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // --- SCROLLBAR MULTIPLATAFORMA ---
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .background(Color.Gray.copy(alpha = 0.2f))
+                ) {
+                    val scrollPercent =
+                        scrollState.value.toFloat() / scrollState.maxValue.coerceAtLeast(1)
+
+                    val indicatorWidth = 80.dp // Tamaño visible del scrollbar
+
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .offset(x = (scrollPercent * (scrollState.maxValue)).dp)
+                            .width(indicatorWidth)
+                            .height(6.dp)
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(3.dp)
+                            )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CustomBarChartCard(
+    title: String,
+    data: List<Pair<String, Int>>,
+    dataLabel: String
+) {
+    if (data.isEmpty()) return
+
+    val maxValue = data.maxOfOrNull { it.second }?.toFloat() ?: 0f
+    if (maxValue == 0f) return
+
+    var animationPlayed by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { animationPlayed = true }
+
+    val colors = remember { generateColors(data.size) }
+    val scrollState = rememberScrollState()
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Text(
+                title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                fontSize = AppDimens.headline
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Box(modifier = Modifier.fillMaxWidth()) {
+
+                // --- Fade izquierdo ---
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .width(24.dp)
+                        .fillMaxHeight()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.surface,
+                                    Color.Transparent
+                                )
+                            )
+                        )
+                )
+
+                // --- Fade derecho ---
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(24.dp)
+                        .fillMaxHeight()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    MaterialTheme.colorScheme.surface
+                                )
+                            )
+                        )
+                )
+
+                Column {
+
+                    // --- SCROLL HORIZONTAL real del gráfico ---
+                    Row(
+                        modifier = Modifier
+                            .horizontalScroll(scrollState)
+                            .height(220.dp)
+                            .padding(bottom = 8.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+
+                        data.forEachIndexed { index, pair ->
+
+                            val animatedHeightFactor by animateFloatAsState(
+                                targetValue = if (animationPlayed) pair.second / maxValue else 0f,
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    delayMillis = 200 + index * 100
+                                )
+                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .padding(horizontal = 8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
+                                Text(
+                                    "${pair.second} $dataLabel",
+                                    fontSize = AppDimens.caption,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+
+                                Spacer(Modifier.height(4.dp))
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height((animatedHeightFactor * 150).dp)
+                                        .background(colors[index])
+                                )
+
+                                Spacer(Modifier.height(4.dp))
+
+                                // Etiqueta vertical
+                                Box(
+                                    modifier = Modifier.height(60.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = pair.first,
+                                        fontSize = AppDimens.tiny,
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 2,
+                                        lineHeight = AppDimens.caption,
+                                        modifier = Modifier.rotate(-90f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // --- Scrollbar multiplataforma ---
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .background(Color.Gray.copy(alpha = 0.2f))
+                    ) {
+                        val scrollPercent =
+                            scrollState.value.toFloat() / scrollState.maxValue.coerceAtLeast(1)
+
+                        val indicatorWidth = 80.dp
+
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .offset(x = (scrollPercent * (scrollState.maxValue)).dp)
+                                .width(indicatorWidth)
+                                .height(6.dp)
+                                .background(
+                                    MaterialTheme.colorScheme.primary,
+                                    RoundedCornerShape(3.dp)
+                                )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun Legend(slices: List<Slice>, dataLabel: String) {

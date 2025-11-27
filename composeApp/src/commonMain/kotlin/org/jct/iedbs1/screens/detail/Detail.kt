@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -207,7 +209,7 @@ fun TotalVotosHeader(totalVotos: Int) {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "ELECCIONES 2026-2027",
+                    text = "ELECCIONES DE LIDERES 2026-2027",
                     fontWeight = FontWeight.Bold,
                     fontSize = AppDimens.title,
                     textAlign = TextAlign.Center,
@@ -319,13 +321,42 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
-                    Text(
+/*                    Text(
                         text = animatedVotos.toString(),
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = AppDimens.display,
                         fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
-                    )
+                    )*/
+                    Box {
+                        // Contorno simulado
+                        val strokeColor = MaterialTheme.colorScheme.surface
+                        val offsets = listOf(
+                            Offset(-1f, -1f), Offset(1f, -1f),
+                            Offset(-1f, 1f), Offset(1f, 1f)
+                        )
+
+                        offsets.forEach { offset ->
+                            Text(
+                                text = animatedVotos.toString(),
+                                color = strokeColor,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = AppDimens.display,
+                                fontFamily = FontFamily(Font(Res.font.Montserrat_Black)),
+                                modifier = Modifier.offset(offset.x.dp, offset.y.dp)
+                            )
+                        }
+
+                        // Texto principal BLANCO encima
+                        Text(
+                            text = animatedVotos.toString(),
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = AppDimens.display,
+                            fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
+                        )
+                    }
+
                     Text(
                         text = "${animatedPercentage.toInt()}%",
                         color = Color.White,

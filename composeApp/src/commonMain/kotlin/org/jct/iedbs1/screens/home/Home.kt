@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -167,7 +168,7 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
+fun Header2(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
     // Surface con esquinas inferiores redondeadas y sombra suave
     Surface(
         modifier = Modifier
@@ -211,10 +212,10 @@ fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "ELECCIONES 2026-2027",
+                        text = "ELECCIONES DE LIDERES 2026-2027",
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = AppDimens.title,
+                        fontSize = AppDimens.title_main,
                         textAlign = TextAlign.Center,
                         lineHeight = 5.sp,
                         fontFamily = FontFamily( Font( Res.font.Montserrat_Black))
@@ -250,6 +251,242 @@ fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
         )
     }
 }
+
+@Composable
+fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(
+                RoundedCornerShape(
+                    bottomStart = 24.dp,
+                    bottomEnd = 24.dp
+                )
+            ),
+        color = MaterialTheme.colorScheme.primary,
+        shadowElevation = 8.dp,
+        tonalElevation = 3.dp
+    ) {
+        // ROW CUSTOM en vez de TopAppBar
+/*        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            // IZQUIERDA → LOGO
+            IconButton(onClick = onNavigateToLogin) {
+                Image(
+                    painter = painterResource(Res.drawable.logo_dove),
+                    contentDescription = "Login",
+                    modifier = Modifier.size(70.dp), // más razonable en desktop
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            // CENTRO → TÍTULO (OCUPA TODO)
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(7.dp))
+                Text(
+                    text = "ELECCIONES DE LIDERES 2026-2027",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = AppDimens.title_main,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
+                )
+                Text(
+                    text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    fontSize = AppDimens.subtitle,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
+                )
+                Spacer(modifier = Modifier.height(7.dp))
+                Text(
+                    text = "Dep. Sistemas ©2025 Area AudioVisual",
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    fontSize = AppDimens.tiny,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
+                )
+            }
+
+
+            // DERECHA → SYNC
+            Icon(
+                imageVector = Icons.Default.Sync,
+                contentDescription = "Sincronizar",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable { viewModel.cargarCargos() }
+            )
+        }*/
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            // 🕊 COLUMNA IZQUIERDA (solo la paloma)
+/*            Column(
+                modifier = Modifier.padding(end = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {*/
+                Image(
+                    painter = painterResource(Res.drawable.logo_dove),
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(40.dp),
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.CenterEnd
+                )
+           // }
+
+            // 📄 COLUMNA DERECHA (los 3 textos)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)  // ocupa el espacio restante
+            ) {
+
+                Text(
+                    text = "ELECCIONES DE LIDERES 2026-2027",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = AppDimens.title_main,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
+                )
+
+                Text(
+                    text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    fontSize = AppDimens.subtitle,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
+                )
+                Spacer(modifier = Modifier.height(7.dp))
+                Text(
+                    text = "Dep. Sistemas ©2025 Area AudioVisual",
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                    fontSize = AppDimens.tiny,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
+                )
+            }
+            // DERECHA → SYNC
+            Icon(
+                imageVector = Icons.Default.Sync,
+                contentDescription = "Sincronizar",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable { viewModel.cargarCargos() }
+            )
+        }
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Header4(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)),
+        color = MaterialTheme.colorScheme.primary,
+        shadowElevation = 8.dp,
+        tonalElevation = 3.dp
+    ) {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent
+            ),
+            navigationIcon = {
+                IconButton(onClick = onNavigateToLogin) {
+                    // puedes poner aquí otra función si quieres
+                }
+            },
+            title = {
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    // 🕊 PALOMA – a la IZQUIERDA de los textos
+                    Image(
+                        painter = painterResource(Res.drawable.logo_dove),
+                        contentDescription = "Logo",
+                        modifier = Modifier
+                            .size(55.dp)
+                            .padding(end = 12.dp),
+                        contentScale = ContentScale.Fit
+                    )
+
+                    // 📄 TEXTOS – centrados entre sí
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Text(
+                            text = "ELECCIONES DE LIDERES 2026-2027",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = AppDimens.title_main,
+                            textAlign = TextAlign.Center,
+                            fontFamily = FontFamily(Font(Res.font.Montserrat_Black))
+                        )
+
+                        Text(
+                            text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                            fontSize = AppDimens.subtitle,
+                            textAlign = TextAlign.Center,
+                            fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
+                        )
+
+                        Text(
+                            text = "Dep. Sistemas ©2025 Area AudioVisual",
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                            fontSize = AppDimens.tiny,
+                            textAlign = TextAlign.Center,
+                            fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
+                        )
+                    }
+                }
+            },
+
+            // 🔄 ACCIONES (SYNC) – SIEMPRE visibles en la derecha
+            actions = {
+                IconButton(onClick = { viewModel.cargarCargos() }) {
+                    Icon(
+                        imageVector = Icons.Default.Sync,
+                        contentDescription = "Sincronizar",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+        )
+    }
+}
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

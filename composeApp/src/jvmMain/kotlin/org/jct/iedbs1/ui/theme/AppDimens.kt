@@ -18,4 +18,5 @@ actual object AppDimens {
     actual val label = 30.sp
     actual val caption = 25.sp
     actual val tiny = 25.sp
+    actual val title_main = 40.sp
 }
