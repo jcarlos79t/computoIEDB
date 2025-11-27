@@ -166,7 +166,8 @@ fun ElectionTitle() {
 private fun InfoCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             content()
@@ -182,8 +183,8 @@ private fun InfoRow(icon: ImageVector, title: String, subtitle: String) {
     ) {
         Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
         Column {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = AppDimens.label)
-            Text(subtitle, fontSize = AppDimens.subtitle, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(title, fontWeight = FontWeight.Bold, fontSize = AppDimens.label, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+            Text(subtitle, fontSize = AppDimens.subtitle, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
         }
     }
 }

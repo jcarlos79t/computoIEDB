@@ -228,7 +228,8 @@ private fun CustomPieChartCard(title: String, data: Map<String, Int>, dataLabel:
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.headline)
@@ -287,7 +288,8 @@ private fun CustomBarChartCard(title: String, data: List<Pair<String, Int>>, dat
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, fontSize = AppDimens.headline)
