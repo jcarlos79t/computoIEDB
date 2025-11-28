@@ -229,7 +229,7 @@ fun VotoPostulanteCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(100.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(postulante.color.toColor()),
                 contentAlignment = Alignment.Center
@@ -238,7 +238,7 @@ fun VotoPostulanteCard(
                     text = "${porcentaje.toInt()}%",
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = AppDimens.display
+                    fontSize = AppDimens.title
                 )
             }
             Spacer(Modifier.width(12.dp))

@@ -37,6 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jct.iedbs1.screens.home.HomeViewModel
 import org.jct.iedbs1.ui.theme.AppDimens
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun LoginRoute(
@@ -69,7 +71,7 @@ fun LoginRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun LoginScreen2(
     uiState: org.jct.iedbs1.screens.home.LoginUiState,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -159,3 +161,104 @@ fun LoginScreen(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreen(
+    uiState: org.jct.iedbs1.screens.home.LoginUiState,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(title = {}, navigationIcon = {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Atrás")
+                }
+            })
+        }
+    ) { paddingValues ->
+
+        val scrollState = rememberScrollState()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 24.dp)
+                .verticalScroll(scrollState),  // 👈 Aquí el scroll mágico
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top   // 👈 Evita que landscape desplace cosas fuera
+        ) {
+            Text(
+                text = "ELECCIONES DE LIDERES 2026-2027",
+                fontWeight = FontWeight.Bold,
+                fontSize = AppDimens.body,
+                textAlign = TextAlign.Center,
+                lineHeight = AppDimens.label
+            )
+
+            Text(
+                text = "Iglesia Evangelica de Dios Boliviana - Santiago I",
+                fontSize = AppDimens.caption,
+                textAlign = TextAlign.Center,
+                lineHeight = AppDimens.tiny
+            )
+
+            Text(
+                text = "Dep. Sistemas ©2025 Area AudioVisual",
+                fontSize = AppDimens.tiny,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(Modifier.height(48.dp))
+
+            OutlinedTextField(
+                value = uiState.username,
+                onValueChange = onUsernameChange,
+                label = { Text("Usuario") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = uiState.password,
+                onValueChange = onPasswordChange,
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+
+            if (uiState.loginError != null) {
+                Spacer(Modifier.height(16.dp))
+                Text(uiState.loginError, color = colorScheme.error, fontSize = AppDimens.label)
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            if (uiState.isLoading) {
+                CircularProgressIndicator()
+            } else {
+                Button(
+                    onClick = onLoginClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366))
+                ) {
+                    Text("Ingresar", fontSize = AppDimens.body)
+                }
+            }
+        }
+    }
+}
+

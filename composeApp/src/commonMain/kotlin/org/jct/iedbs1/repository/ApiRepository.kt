@@ -17,9 +17,9 @@ class ApiRepository(
     private val bearerToken: String
 ) {
     private val client = httpClient()
-    private val baseUrl = "https://rxrdxsqykqlkymbfqypp.supabase.co/rest/v1"  //jct
+    //private val baseUrl = "https://rxrdxsqykqlkymbfqypp.supabase.co/rest/v1"  //jct
     //iedb
-    //private val baseUrl = "https://jyxeysiyflqpcmtqtibk.supabase.co/rest/v1"
+    private val baseUrl = "https://jyxeysiyflqpcmtqtibk.supabase.co/rest/v1"
 
     suspend fun getCargos(): List<Cargo> {
         val response: String = client.get("$baseUrl/Cargo?order=fecha.desc") {

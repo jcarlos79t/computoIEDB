@@ -201,7 +201,7 @@ class HomeViewModel(
     }
 
     // --- Reports Screen ---
-    private fun limitMapData(data: Map<String, Int>, limit: Int = 19): Map<String, Int> {
+    private fun limitMapData(data: Map<String, Int>, limit: Int = 35): Map<String, Int> {
         if (data.size <= limit + 1) return data
 
         val sortedData = data.toList().sortedByDescending { it.second }
@@ -212,7 +212,7 @@ class HomeViewModel(
         return mainData.toMap() + ("Otros" to otherSum)
     }
 
-    private fun limitPairData(data: List<Pair<String, Int>>, limit: Int = 19): List<Pair<String, Int>> {
+    private fun limitPairData(data: List<Pair<String, Int>>, limit: Int = 35): List<Pair<String, Int>> {
         if (data.size <= limit + 1) return data
 
         val mainData = data.take(limit)
