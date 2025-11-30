@@ -202,7 +202,7 @@ fun ElectionTitle() {
                 fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
             )
             Text(
-                text = "Dep. Sistemas ©2025 Area AudioVisual",
+                text = "IEDBS-I ©2025 Area AudioVisual",
                 fontSize = AppDimens.tiny,
                 textAlign = TextAlign.Center,
                 fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))

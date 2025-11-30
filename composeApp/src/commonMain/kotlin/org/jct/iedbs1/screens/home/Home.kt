@@ -229,7 +229,7 @@ fun Header2(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
                         fontFamily = FontFamily( Font( Res.font.Montserrat_SemiBold))
                     )
                     Text(
-                        text = "Dep. Sistemas ©2025 Area AudioVisual",
+                        text = "IEDBS-I ©2025 Area AudioVisual",
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                         fontSize = AppDimens.tiny,
                         textAlign = TextAlign.Center,
@@ -377,7 +377,7 @@ fun Header(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(
-                    text = "Dep. Sistemas ©2025 Area AudioVisual",
+                    text = "IEDBS-I ©2025 Area AudioVisual",
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                     fontSize = AppDimens.tiny,
                     textAlign = TextAlign.Center,
@@ -461,7 +461,7 @@ fun Header4(viewModel: HomeViewModel, onNavigateToLogin: () -> Unit) {
                         )
 
                         Text(
-                            text = "Dep. Sistemas ©2025 Area AudioVisual",
+                            text = "IEDBS-I ©2025 Area AudioVisual",
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                             fontSize = AppDimens.tiny,
                             textAlign = TextAlign.Center,

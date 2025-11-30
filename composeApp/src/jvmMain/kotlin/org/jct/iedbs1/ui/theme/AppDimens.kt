@@ -9,8 +9,8 @@ import androidx.compose.ui.unit.sp
 actual object AppDimens {
     actual val title =40.sp
     actual val subtitle = 30.sp
-    actual val card_title = 60.sp
-    actual val card_subtitle = 35.sp
+    actual val card_title = 53.sp
+    actual val card_subtitle = 33.sp
     actual val card_body = 27.sp
     actual val display = 55.sp
     actual val headline = 40.sp

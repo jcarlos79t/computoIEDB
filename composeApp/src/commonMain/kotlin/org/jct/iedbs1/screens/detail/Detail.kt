@@ -224,7 +224,7 @@ fun TotalVotosHeader(totalVotos: Int) {
                     fontFamily = FontFamily(Font(Res.font.Montserrat_SemiBold))
                 )
                 Text(
-                    text = "Dep. Sistemas ©2025 Area AudioVisual",
+                    text = "IEDBS-I ©2025 Area AudioVisual",
                     fontSize = AppDimens.tiny,
                     textAlign = TextAlign.Center,
                     fontFamily = FontFamily(Font(Res.font.Montserrat_Medium))
@@ -232,7 +232,7 @@ fun TotalVotosHeader(totalVotos: Int) {
             }
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))   //aqui
 
         AnimatedVisibility(
             visible = visible,
@@ -302,14 +302,14 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(85.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(animatedFraction)
-                        .height(100.dp)
+                        .height(85.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(postulante.color.toColor())
                 )
@@ -332,8 +332,8 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
                         // Contorno simulado
                         val strokeColor = MaterialTheme.colorScheme.surface
                         val offsets = listOf(
-                            Offset(-1f, -1f), Offset(1f, -1f),
-                            Offset(-1f, 1f), Offset(1f, 1f)
+                            Offset(-2f, -2f), Offset(2f, -2f),
+                            Offset(-2f, 2f), Offset(2f, 2f)
                         )
 
                         offsets.forEach { offset ->
@@ -368,7 +368,7 @@ fun ResultBar(postulante: Postulante, votos: Int, totalVotos: Int) {
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(4.dp))
 
         AnimatedVisibility(
             visible = animationPlayed,

@@ -110,7 +110,7 @@ fun LoginScreen2(
                 lineHeight = AppDimens.tiny
             )
             Text(
-                text = "Dep. Sistemas ©2025 Area AudioVisual",
+                text = "IEDBS-I ©2025 Area AudioVisual",
                 fontSize = AppDimens.tiny,
                 textAlign = TextAlign.Center
             )
@@ -208,7 +208,7 @@ fun LoginScreen(
             )
 
             Text(
-                text = "Dep. Sistemas ©2025 Area AudioVisual",
+                text = "IEDBS-I ©2025 Area AudioVisual",
                 fontSize = AppDimens.tiny,
                 textAlign = TextAlign.Center
             )
